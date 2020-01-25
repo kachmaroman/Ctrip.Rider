@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "925299468449",
+    "firebase_url": "https://ctrip-50eab.firebaseio.com",
+    "project_id": "ctrip-50eab",
+    "storage_bucket": "ctrip-50eab.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:925299468449:android:7c9b25634c17293cb268e0",
+        "android_client_info": {
+          "package_name": "com.companyname.ctrip.rider"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "925299468449-1fgbel6tqb7mm25o1al6tluf4cglvv97.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBk-f9zqpg1uGZYAHUt5kV8xbOxGQiS9w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "925299468449-1fgbel6tqb7mm25o1al6tluf4cglvv97.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
