@@ -20,6 +20,10 @@
     <item name="colorAccent">@color/ctripAccentColor</item>
   </style>
 
+	<style name="CtripTheme.ActionBar.Transparent" parent="CtripTheme">
+		<item name="colorPrimary">@android:color/transparent</item>
+	</style>
+
     <style name="NavigationStyle" parent="Theme.AppCompat.Light.NoActionBar">
 	    <item name="colorPrimary">@color/ctripAccentColor</item>
 	    <item name="colorPrimaryDark">@color/ctripAccentColor</item>

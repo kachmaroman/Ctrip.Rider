@@ -14,8 +14,6 @@
     </layer-list>
   </item>
 
-
-
   <item android:state_pressed="true">
     <layer-list>
       <item android:bottom="0dp" android:left="0dp">
