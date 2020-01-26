@@ -1,17 +1,31 @@
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/drawerLayout"
+    android:fitsSystemWindows="true">
 
-    <Button
-        android:id="@+id/myButton"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:text="Test connection"
-    />
+        android:layout_height="match_parent">
 
+        <include
+            layout="@layout/include_main"/>
 
-</LinearLayout>
+    </LinearLayout>
+
+    <android.support.design.widget.NavigationView
+        android:id="@+id/navView"
+        android:layout_width="300dp"
+        android:layout_height="match_parent"
+        android:background="@color/ctripwhite"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/headerLayout"
+        app:menu="@menu/navmenu"
+        app:theme="@style/NavigationStyle"/>
+
+</android.support.v4.widget.DrawerLayout>

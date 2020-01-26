@@ -12,7 +12,7 @@ using Firebase.Auth;
 
 namespace Ctrip.Rider.Activities
 {
-	[Activity(Label = "@string/app_name", Theme = "@style/CtripTheme", MainLauncher = true)]
+	[Activity(Label = "@string/app_name", Theme = "@style/CtripTheme", MainLauncher = false)]
 	public class LoginActivity : AppCompatActivity
 	{
 		private TextInputLayout _emailText;
