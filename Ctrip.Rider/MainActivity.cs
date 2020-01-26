@@ -6,25 +6,25 @@ using Android.Widget;
 using System;
 using Firebase.Database;
 using Firebase;
+// ReSharper disable All
 
 namespace Ctrip.Rider
 {
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = false)]
     public class MainActivity : AppCompatActivity
     {
-        FirebaseDatabase database;
-
-        Button btnTestConnection;
+        FirebaseDatabase _database;
+        Button _btnTestConnection;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
-            // Set our view from the "main" layout resource
+
             SetContentView(Resource.Layout.activity_main);
 
-            btnTestConnection = FindViewById<Button>(Resource.Id.myButton);
-            btnTestConnection.Click += BtnTestConnection_Click;
+            _btnTestConnection = FindViewById<Button>(Resource.Id.myButton);
+            _btnTestConnection.Click += BtnTestConnection_Click;
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
@@ -53,14 +53,12 @@ namespace Ctrip.Rider
                     .Build();
 
                 app = FirebaseApp.InitializeApp(this, options);
-                database = FirebaseDatabase.GetInstance(app);
+                _database = FirebaseDatabase.GetInstance(app);
             }
-            else
-            {
-                database = FirebaseDatabase.GetInstance(app);
-            }
-
-            DatabaseReference databaseReference = database.GetReference("UserSupport");
+            
+            _database = FirebaseDatabase.GetInstance(app);
+  
+            DatabaseReference databaseReference = _database.GetReference("UserSupport");
             databaseReference.SetValue("Ticket1");
 
             Toast.MakeText(this, "Completed", ToastLength.Short).Show();
