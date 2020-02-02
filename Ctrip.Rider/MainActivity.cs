@@ -1,21 +1,28 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Android;
 using Android.App;
+using Android.Content;
 using Android.Content.PM;
 using Android.Gms.Location;
 using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
-using Android.Locations;
+using Android.Graphics;
 using Android.OS;
 using Android.Support.V7.App;
 using Android.Runtime;
 using Android.Support.V4.Content;
 using Android.Support.V4.Widget;
-using Android.Support.V7.Widget;
 using Android.Views;
+using Android.Widget;
 using Ctrip.Rider.Helpers;
+using Google.Places;
 using ActionBar = Android.Support.V7.App.ActionBar;
+using Location = Android.Locations.Location;
+using Toolbar = Android.Support.V7.Widget.Toolbar;
+using Result = Android.App.Result;
 
 namespace Ctrip.Rider
 {
@@ -24,13 +31,28 @@ namespace Ctrip.Rider
     {
         private Toolbar _mainToolbar;
         private DrawerLayout _drawerLayout;
-        private GoogleMap _googleMap;
+
+        //TextViews
+        private TextView _pickupLocationText;
+        private TextView _destinationText;
+
+		//ImageView
+		private ImageView _centerMarker;
+
+        //Layouts
+        private RelativeLayout _layoutPickUp;
+        private RelativeLayout _layoutDestination;
+
+		//Buttons
+		RadioButton _pickupRadio;
+		RadioButton _destitationRadio;
 
         private readonly string[] _permissionGroupLocation =
 	        {Manifest.Permission.AccessCoarseLocation, Manifest.Permission.AccessFineLocation};
 
         private const int RequestLocationId = 0;
 
+        private GoogleMap _googleMap;
         private LocationRequest _mLocationRequest;
         private FusedLocationProviderClient _locationProviderClient;
         private Location _mLastLocation;
@@ -40,6 +62,17 @@ namespace Ctrip.Rider
         private static readonly int FastestInterval = 5;
         private static readonly int Displacement = 3; //meters
         private static readonly int Zoom = 15;
+
+		//Helpers
+		MapFunctionHelper _mapHelper;
+
+		//TripDetails
+		private LatLng _pickUpLocationLatLng;
+		private LatLng _destinationLatLng;
+
+		//Flags
+		private int _addressRequest = 1;
+		private bool _takeAddressFromSearch = false;
 
 	    protected override async void OnCreate(Bundle savedInstanceState)
         {
@@ -56,6 +89,8 @@ namespace Ctrip.Rider
             CreateLocationRequest();
 	        await GetCurrentLocationAsync();
 	        await StartLocationUpdatesAsync();
+
+	        InitializePlaces();
         }
 
         public override bool OnOptionsItemSelected(IMenuItem item)
@@ -80,6 +115,26 @@ namespace Ctrip.Rider
         public void OnMapReady(GoogleMap googleMap)
         {
 	        _googleMap = googleMap;
+	        _googleMap.CameraIdle += MainMap_CameraIdle;
+	        string mapKey = Resources.GetString(Resource.String.mapKey);
+	        _mapHelper = new MapFunctionHelper(mapKey, _googleMap);
+        }
+
+        private async void MainMap_CameraIdle(object sender, EventArgs e)
+        {
+	        if (!_takeAddressFromSearch)
+	        {
+		        if (_addressRequest == 1)
+		        {
+			        _pickUpLocationLatLng = _googleMap.CameraPosition.Target;
+			        _pickupLocationText.Text = await _mapHelper.FindCordinateAddress(_pickUpLocationLatLng);
+		        }
+		        else if (_addressRequest == 2)
+		        {
+			        _destinationLatLng = _googleMap.CameraPosition.Target;
+			        _destinationText.Text = await _mapHelper.FindCordinateAddress(_destinationLatLng);
+		        }
+			}
         }
 
         private void ConnectControls()
@@ -94,6 +149,22 @@ namespace Ctrip.Rider
 	        ActionBar actionBar = SupportActionBar;
 	        actionBar.SetHomeAsUpIndicator(Resource.Mipmap.ic_menu_action);
 	        actionBar.SetDisplayHomeAsUpEnabled(true);
+
+	        _pickupLocationText = FindViewById<TextView>(Resource.Id.pickupLocationText);
+	        _destinationText = FindViewById<TextView>(Resource.Id.destinationText);
+	        _layoutPickUp = FindViewById<RelativeLayout>(Resource.Id.layoutPickup);
+	        _layoutDestination = FindViewById<RelativeLayout>(Resource.Id.layoutDestination);
+
+	        _pickupRadio = FindViewById<RadioButton>(Resource.Id.pickupRadio);
+	        _destitationRadio = FindViewById<RadioButton>(Resource.Id.destinationRadio);
+
+	        _layoutPickUp.Click += LayoutPickUp_Click;
+	        _layoutDestination.Click += LayoutDestination_Click;
+
+	        _pickupRadio.Click += PickupRadio_Click;
+	        _destitationRadio.Click += DestinationRadio_Click;
+
+	        _centerMarker = FindViewById<ImageView>(Resource.Id.centerMarker);
         }
 
         private bool CheckLocationPermissions()
@@ -158,6 +229,97 @@ namespace Ctrip.Rider
 	        if (_locationProviderClient != null && _mLocationCalback != null)
 	        {
 		        await _locationProviderClient.RemoveLocationUpdatesAsync(_mLocationCalback);
+	        }
+        }
+
+        private void InitializePlaces()
+        {
+	        string mapKey = Resources.GetString(Resource.String.mapKey);
+
+	        if (!PlacesApi.IsInitialized)
+	        {
+		        PlacesApi.Initialize(this, mapKey);
+	        }
+        }
+
+        private void LayoutPickUp_Click(object sender, EventArgs e)
+        {
+	        List<Place.Field> fields = new List<Place.Field>
+            {
+	            Place.Field.Id, Place.Field.Name, Place.Field.LatLng, Place.Field.Address
+            };
+
+            Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.Overlay, fields)
+	            .SetCountry("UA")
+	            .Build(this);
+
+            StartActivityForResult(intent, 1);
+        }
+
+        private void LayoutDestination_Click(object sender, EventArgs e)
+        {
+	        List<Place.Field> fields = new List<Place.Field>
+	        {
+		        Place.Field.Id, Place.Field.Name, Place.Field.LatLng, Place.Field.Address
+	        };
+
+	        Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.Overlay, fields)
+		        .SetCountry("UA")
+		        .Build(this);
+
+	        StartActivityForResult(intent, 2);
+        }
+
+        private void PickupRadio_Click(object sender, EventArgs e)
+        {
+	        _addressRequest = 1;
+	        _pickupRadio.Checked = true;
+			_destitationRadio.Checked = false;
+			_takeAddressFromSearch = false;
+			_centerMarker.SetColorFilter(Color.DarkGreen);
+        }
+
+        private void DestinationRadio_Click(object sender, EventArgs e)
+        {
+	        _addressRequest = 2;
+	        _destitationRadio.Checked = true;
+			_pickupRadio.Checked = false;
+			_takeAddressFromSearch = false;
+			_centerMarker.SetColorFilter(Color.Red);
+		}
+
+        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
+        {
+	        base.OnActivityResult(requestCode, resultCode, data);
+
+	        if (requestCode == 1)
+	        {
+		        if (resultCode == Result.Ok)
+		        {
+			        _takeAddressFromSearch = true;
+			        _pickupRadio.Checked = false;
+					_destitationRadio.Checked = false;
+
+			        Place place = Autocomplete.GetPlaceFromIntent(data);
+			        _pickupLocationText.Text = place.Name;
+			        _googleMap.AnimateCamera(CameraUpdateFactory.NewLatLngZoom(place.LatLng, 15));
+			        _centerMarker.SetColorFilter(Color.DarkGreen);
+				}
+	        }
+
+	        if (requestCode == 2)
+	        {
+		        if (resultCode == Result.Ok)
+		        {
+			        _takeAddressFromSearch = true;
+			        _pickupRadio.Checked = false;
+			        _destitationRadio.Checked = false;
+
+					Place place = Autocomplete.GetPlaceFromIntent(data);
+			        _destinationText.Text = place.Name;
+			        _googleMap.AnimateCamera(CameraUpdateFactory.NewLatLngZoom(place.LatLng, 15));
+			        _centerMarker.SetColorFilter(Color.Red);
+				}
 	        }
         }
     }

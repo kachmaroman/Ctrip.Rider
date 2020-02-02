@@ -1,6 +1,5 @@
 ﻿using System;
 using Android.Gms.Location;
-using Android.Locations;
 using Android.Util;
 
 namespace Ctrip.Rider.Helpers
@@ -25,6 +24,6 @@ namespace Ctrip.Rider.Helpers
 
     public class OnLocationCapturedEventArgs : EventArgs
     {
-	    public Location Location { get; set; }
+	    public Android.Locations.Location Location { get; set; }
     }
 }
