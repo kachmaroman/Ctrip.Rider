@@ -73,6 +73,7 @@
     <Compile Include="Dtos\UserLoginDto.cs" />
     <Compile Include="Dtos\UserRegisterDto.cs" />
     <Compile Include="EventListeners\TaskCompletionListener.cs" />
+    <Compile Include="Helpers\DirectionParser.cs" />
     <Compile Include="Helpers\FirebaseBuilder.cs" />
     <Compile Include="Helpers\GeocodingParser.cs" />
     <Compile Include="Helpers\LocationCallbackHelper.cs" />
@@ -337,6 +338,18 @@
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\redmarker.png" />
   </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\tripdetails.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\iconimage.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\position.png" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
     Other similar extension points exist, see Microsoft.Common.targets.

@@ -189,4 +189,7 @@
 
     </FrameLayout>
 
+   <include layout="@layout/tripdetails"/>
+	
+
 </android.support.design.widget.CoordinatorLayout>

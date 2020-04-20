@@ -8,31 +8,33 @@ using Android.App;
 using Android.Content;
 using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
+using Android.Graphics;
 using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Com.Google.Maps.Android;
+using Java.Util;
 using Newtonsoft.Json;
 
 namespace Ctrip.Rider.Helpers
 {
     public class MapFunctionHelper
     {
-        string mapkey;
-        GoogleMap map;
-        public double distance;
-        public double duration;
-        public string distanceString;
-        public string durationstring;
-        Marker pickupMarker;
-        Marker driverLocationMarker;
-        bool isRequestingDirection;
+        private string mapkey;
+        private GoogleMap map;
+        private double distance;
+        private double duration;
+        private string distanceString;
+        private string durationString;
+        private Marker pickupMarker;
+        private Marker driverLocationMarker;
+        private bool isRequestingDirection;
 
-        public MapFunctionHelper(string mMapkey, GoogleMap mmap)
+        public MapFunctionHelper(string mapkey, GoogleMap map)
         {
-            mapkey = mMapkey;
-            map = mmap;
+            this.mapkey = mapkey;
+            this.map = map;
         }
 
         public string GetGeoCodeUrl(double lat, double lng)
@@ -42,31 +44,36 @@ namespace Ctrip.Rider.Helpers
 
         public async Task<string> GetGeoJsonAsync(string url)
         {
-            var handler = new HttpClientHandler();
+	        HttpClientHandler handler = new HttpClientHandler();
             HttpClient client = new HttpClient(handler);
-            string result = await client.GetStringAsync(url);
-            return result;
+
+            return await client.GetStringAsync(url);
         }
 
         public async Task<string> FindCordinateAddress(LatLng position)
         {
             string url = GetGeoCodeUrl(position.Latitude, position.Longitude);
-            string json = "";
-            string placeAddress = "";
+           
+            string placeAddress = string.Empty;
 
             //Check for Internet connection
-            json = await GetGeoJsonAsync(url);
+            string json = await GetGeoJsonAsync(url);
 
-            if (!string.IsNullOrEmpty(json))
+            if (string.IsNullOrEmpty(json))
             {
-                var geoCodeData = JsonConvert.DeserializeObject<GeocodingParser>(json);
-                if (!geoCodeData.status.Contains("ZERO"))
-                {
-                    if (geoCodeData.results[0] != null)
-                    {
-                        placeAddress = geoCodeData.results[0].formatted_address;
-                    }
-                }
+	            return placeAddress;
+            }
+
+            GeocodingParser geoCodeData = JsonConvert.DeserializeObject<GeocodingParser>(json);
+
+            if (geoCodeData.status.Contains("ZERO"))
+            {
+	            return placeAddress;
+            }
+
+            if (geoCodeData.results[0] != null)
+            {
+	            placeAddress = geoCodeData.results[0].formatted_address;
             }
 
             return placeAddress;
@@ -83,7 +90,7 @@ namespace Ctrip.Rider.Helpers
             //mode
             string mode = "mode=driving";
 
-            //Buidling the parameters to the webservice
+            //Building the parameters to the webservice
             string parameters = str_origin + "&" + str_destination + "&" + "&" + mode + "&key=";
 
             //Output format
@@ -94,103 +101,105 @@ namespace Ctrip.Rider.Helpers
             //Building the final url string
             string url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + key;
 
-            string json = "";
-            json = await GetGeoJsonAsync(url);
-
-            return json;
+            return await GetGeoJsonAsync(url);
 
         }
 
-        //public void DrawTripOnMap(string json)
-        //{
-        //    var directionData = JsonConvert.DeserializeObject<DirectionParser>(json);
+        public void DrawTripOnMap(string json)
+        {
+	        DirectionParser directionData = JsonConvert.DeserializeObject<DirectionParser>(json);
 
-        //    //Decode Encoded Route
-        //    var points = directionData.routes[0].overview_polyline.points;
-        //    var line = PolyUtil.Decode(points);
+            //Decode Encoded Route
+            var points = directionData.routes[0].overview_polyline.points;
+            IList<LatLng> line = PolyUtil.Decode(points);
 
-        //    ArrayList routeList = new ArrayList();
-        //    foreach (LatLng item in line)
-        //    {
-        //        routeList.Add(item);
-        //    }
+            ArrayList routeList = new ArrayList();
 
-        //    //Draw Polylines on Map
-        //    PolylineOptions polylineOptions = new PolylineOptions()
-        //        .AddAll(routeList)
-        //        .InvokeWidth(10)
-        //        .InvokeColor(Color.Teal)
-        //        .InvokeStartCap(new SquareCap())
-        //        .InvokeEndCap(new SquareCap())
-        //        .InvokeJointType(JointType.Round)
-        //        .Geodesic(true);
+            foreach (LatLng item in line)
+            {
+                routeList.Add(item);
+            }
 
-        //    Android.Gms.Maps.Model.Polyline mPolyline = map.AddPolyline(polylineOptions);
+            //Draw Polylines on Map
+            PolylineOptions polylineOptions = new PolylineOptions()
+                .AddAll(routeList)
+                .InvokeWidth(10)
+                .InvokeColor(Color.Teal)
+                .InvokeStartCap(new SquareCap())
+                .InvokeEndCap(new SquareCap())
+                .InvokeJointType(JointType.Round)
+                .Geodesic(true);
 
-        //    //Get first point and lastpoint
-        //    LatLng firstpoint = line[0];
-        //    LatLng lastpoint = line[line.Count - 1];
+            Android.Gms.Maps.Model.Polyline mPolyline = map.AddPolyline(polylineOptions);
 
-        //    //Pickup marker options
-        //    MarkerOptions pickupMarkerOptions = new MarkerOptions();
-        //    pickupMarkerOptions.SetPosition(firstpoint);
-        //    pickupMarkerOptions.SetTitle("Pickup Location");
-        //    pickupMarkerOptions.SetIcon(BitmapDescriptorFactory.DefaultMarker(BitmapDescriptorFactory.HueGreen));
+            LatLng firstpoint = line.First();
+            LatLng lastpoint = line.Last();
 
-        //    //Destination marker options
-        //    MarkerOptions destinationMarkerOptions = new MarkerOptions();
-        //    destinationMarkerOptions.SetPosition(lastpoint);
-        //    destinationMarkerOptions.SetTitle("Destination");
-        //    destinationMarkerOptions.SetIcon(BitmapDescriptorFactory.DefaultMarker(BitmapDescriptorFactory.HueRed));
+            MarkerOptions pickupMarkerOptions = new MarkerOptions();
+            pickupMarkerOptions.SetPosition(firstpoint);
+            pickupMarkerOptions.SetTitle("Pickup Location");
+            pickupMarkerOptions.SetIcon(BitmapDescriptorFactory.DefaultMarker(BitmapDescriptorFactory.HueGreen));
 
+            MarkerOptions destinationMarkerOptions = new MarkerOptions();
+            destinationMarkerOptions.SetPosition(lastpoint);
+            destinationMarkerOptions.SetTitle("Destination");
+            destinationMarkerOptions.SetIcon(BitmapDescriptorFactory.DefaultMarker(BitmapDescriptorFactory.HueRed));
 
-        //    MarkerOptions driverMarkerOptions = new MarkerOptions();
-        //    driverMarkerOptions.SetPosition(firstpoint);
-        //    driverMarkerOptions.SetTitle("Current Location");
-        //    driverMarkerOptions.SetIcon(BitmapDescriptorFactory.FromResource(Resource.Drawable.position));
-        //    driverMarkerOptions.Visible(false);
+            MarkerOptions driverMarkerOptions = new MarkerOptions();
+            driverMarkerOptions.SetPosition(firstpoint);
+            driverMarkerOptions.SetTitle("Current Location");
+            driverMarkerOptions.SetIcon(BitmapDescriptorFactory.FromResource(Resource.Drawable.position));
+            driverMarkerOptions.Visible(false);
 
+            pickupMarker = map.AddMarker(pickupMarkerOptions);
+            Marker destinationMarker = map.AddMarker(destinationMarkerOptions);
+            driverLocationMarker = map.AddMarker(driverMarkerOptions);
 
-        //    pickupMarker = map.AddMarker(pickupMarkerOptions);
-        //    Marker destinationMarker = map.AddMarker(destinationMarkerOptions);
-        //    driverLocationMarker = map.AddMarker(driverMarkerOptions);
+            //Get Trip Bounds
+            double southlng = directionData.routes[0].bounds.southwest.lng;
+            double southlat = directionData.routes[0].bounds.southwest.lat;
+            double northlng = directionData.routes[0].bounds.northeast.lng;
+            double northlat = directionData.routes[0].bounds.northeast.lat;
 
-        //    //Get Trip Bounds
-        //    double southlng = directionData.routes[0].bounds.southwest.lng;
-        //    double southlat = directionData.routes[0].bounds.southwest.lat;
-        //    double northlng = directionData.routes[0].bounds.northeast.lng;
-        //    double northlat = directionData.routes[0].bounds.northeast.lat;
+            LatLng southwest = new LatLng(southlat, southlng);
+            LatLng northeast = new LatLng(northlat, northlng);
+            LatLngBounds tripBound = new LatLngBounds(southwest, northeast);
 
-        //    LatLng southwest = new LatLng(southlat, southlng);
-        //    LatLng northeast = new LatLng(northlat, northlng);
-        //    LatLngBounds tripBound = new LatLngBounds(southwest, northeast);
+            map.AnimateCamera(CameraUpdateFactory.NewLatLngBounds(tripBound, 100));
+            map.SetPadding(40, 40, 40, 40);
+            pickupMarker.ShowInfoWindow();
 
-        //    map.AnimateCamera(CameraUpdateFactory.NewLatLngBounds(tripBound, 100));
-        //    map.SetPadding(40, 40, 40, 40);
-        //    pickupMarker.ShowInfoWindow();
+            duration = directionData.routes[0].legs[0].duration.value;
+            distance = directionData.routes[0].legs[0].distance.value;
+            durationString = directionData.routes[0].legs[0].duration.text;
+            distanceString = directionData.routes[0].legs[0].distance.text;
+        }
 
-        //    duration = directionData.routes[0].legs[0].duration.value;
-        //    distance = directionData.routes[0].legs[0].distance.value;
-        //    durationstring = directionData.routes[0].legs[0].duration.text;
-        //    distanceString = directionData.routes[0].legs[0].distance.text;
+        private double GetFare()
+        {
+            double basefare = 20; //UAH 
+            double distanceFare = 5; //UAH per kilometer
+            double timefare = 3; //UAH per minute
 
-        //}
+            double kmfares = (distance / 1000) * distanceFare;
+            double minsfares = (duration / 60) * timefare;
 
-        //public double EstimateFares()
-        //{
-        //    double basefare = 20; //USD 
-        //    double distanceFare = 5; //USD per kilometer
-        //    double timefare = 3; //USD per minute
+            double amount = kmfares + minsfares + basefare;
 
-        //    double kmfares = (distance / 1000) * distanceFare;
-        //    double minsfares = (duration / 60) * timefare;
+            return Math.Floor(amount / 10) * 10;
+        }
 
-        //    double amount = kmfares + minsfares + basefare;
-        //    double fares = Math.Floor(amount / 10) * 10;
+        public string GetEstimatedFare()
+        {
+	        double fare = GetFare();
+            
+            return $"{fare} - {fare + 20} ₴";
+        }
 
-        //    return fares;
-
-        //}
+        public string GetDuration()
+        {
+            return durationString;
+        }
 
         //public async void UpdateDriverLocationToPickUp(LatLng firstposition, LatLng secondposition)
         //{

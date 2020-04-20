@@ -10,4 +10,5 @@
 	<color name="ctripPrimaryDark">#102A38</color>
 	<color name="ctripAccentClick">#A25508</color>
 	<color name="ctripAsh">#e2e2e2</color>
+	<color name="ctripBlack">#000</color>
 </resources>

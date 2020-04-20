@@ -13,6 +13,7 @@ using Android.Graphics;
 using Android.OS;
 using Android.Support.V7.App;
 using Android.Runtime;
+using Android.Support.Design.Widget;
 using Android.Support.V4.Content;
 using Android.Support.V4.Widget;
 using Android.Views;
@@ -43,9 +44,14 @@ namespace Ctrip.Rider
         private RelativeLayout _layoutPickUp;
         private RelativeLayout _layoutDestination;
 
+		//Bottom-sheets
+		BottomSheetBehavior _tripDetailsBottomSheetBehavior;
+
 		//Buttons
-		RadioButton _pickupRadio;
-		RadioButton _destitationRadio;
+		private RadioButton _pickupRadio;
+		private RadioButton _destitationRadio;
+		private Button _favouritePlacesButton;
+		private Button _locationSetButton;
 
         private readonly string[] _permissionGroupLocation =
 	        {Manifest.Permission.AccessCoarseLocation, Manifest.Permission.AccessFineLocation};
@@ -133,6 +139,7 @@ namespace Ctrip.Rider
 		        {
 			        _destinationLatLng = _googleMap.CameraPosition.Target;
 			        _destinationText.Text = await _mapHelper.FindCordinateAddress(_destinationLatLng);
+			        TripLocationsSet();
 		        }
 			}
         }
@@ -154,17 +161,22 @@ namespace Ctrip.Rider
 	        _destinationText = FindViewById<TextView>(Resource.Id.destinationText);
 	        _layoutPickUp = FindViewById<RelativeLayout>(Resource.Id.layoutPickup);
 	        _layoutDestination = FindViewById<RelativeLayout>(Resource.Id.layoutDestination);
-
-	        _pickupRadio = FindViewById<RadioButton>(Resource.Id.pickupRadio);
-	        _destitationRadio = FindViewById<RadioButton>(Resource.Id.destinationRadio);
-
 	        _layoutPickUp.Click += LayoutPickUp_Click;
 	        _layoutDestination.Click += LayoutDestination_Click;
 
+			_pickupRadio = FindViewById<RadioButton>(Resource.Id.pickupRadio);
+	        _destitationRadio = FindViewById<RadioButton>(Resource.Id.destinationRadio);
+	        _favouritePlacesButton = FindViewById<Button>(Resource.Id.favouritePlacesButton);
+	        _locationSetButton = FindViewById<Button>(Resource.Id.locationsSetButton);
 	        _pickupRadio.Click += PickupRadio_Click;
 	        _destitationRadio.Click += DestinationRadio_Click;
+	        _favouritePlacesButton.Click += FavouritePlacesButoon_Click;
+	        _locationSetButton.Click += LocationSetButton_Click;
 
 	        _centerMarker = FindViewById<ImageView>(Resource.Id.centerMarker);
+
+	        FrameLayout tripDetailsView = FindViewById<FrameLayout>(Resource.Id.tripdetails_bottomsheet);
+	        _tripDetailsBottomSheetBehavior = BottomSheetBehavior.From(tripDetailsView);
         }
 
         private bool CheckLocationPermissions()
@@ -288,6 +300,55 @@ namespace Ctrip.Rider
 			_centerMarker.SetColorFilter(Color.Red);
 		}
 
+        private void FavouritePlacesButoon_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private async void LocationSetButton_Click(object sender, EventArgs e)
+        {
+	        _locationSetButton.Text = "Plsease wait...";
+			_locationSetButton.Enabled = false;
+
+			string json = await _mapHelper.GetDirectionJsonAsync(_pickUpLocationLatLng, _destinationLatLng);
+
+			if (!string.IsNullOrEmpty(json))
+			{
+				TextView txtFare = FindViewById<TextView>(Resource.Id.tripEstimateFareText);
+				TextView txtTime = FindViewById<TextView>(Resource.Id.newTripTimeText);
+
+				_mapHelper.DrawTripOnMap(json);
+
+				txtFare.Text = _mapHelper.GetEstimatedFare();
+				txtTime.Text = _mapHelper.GetDuration();
+
+				_tripDetailsBottomSheetBehavior.State = BottomSheetBehavior.StateExpanded;
+
+				TripDrawnOnMap();
+			}
+
+			_locationSetButton.Text = "Done";
+			_locationSetButton.Enabled = true;
+
+        }
+
+        private void TripLocationsSet()
+        {
+	        _favouritePlacesButton.Visibility = ViewStates.Invisible;
+	        _locationSetButton.Visibility = ViewStates.Visible;
+        }
+
+        private void TripDrawnOnMap()
+        {
+			_layoutDestination.Clickable = false;
+			_layoutPickUp.Clickable = false;
+
+			_pickupRadio.Enabled = false;
+			_destitationRadio.Enabled = false;
+			_takeAddressFromSearch = false;
+			_centerMarker.Visibility = ViewStates.Invisible;
+		}
+
         protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
         {
 	        base.OnActivityResult(requestCode, resultCode, data);
@@ -302,6 +363,7 @@ namespace Ctrip.Rider
 
 			        Place place = Autocomplete.GetPlaceFromIntent(data);
 			        _pickupLocationText.Text = place.Name;
+			        _pickUpLocationLatLng = place.LatLng;
 			        _googleMap.AnimateCamera(CameraUpdateFactory.NewLatLngZoom(place.LatLng, 15));
 			        _centerMarker.SetColorFilter(Color.DarkGreen);
 				}
@@ -317,9 +379,11 @@ namespace Ctrip.Rider
 
 					Place place = Autocomplete.GetPlaceFromIntent(data);
 			        _destinationText.Text = place.Name;
+			        _destinationLatLng = place.LatLng;
 			        _googleMap.AnimateCamera(CameraUpdateFactory.NewLatLngZoom(place.LatLng, 15));
 			        _centerMarker.SetColorFilter(Color.Red);
-				}
+			        TripLocationsSet();
+		        }
 	        }
         }
     }
