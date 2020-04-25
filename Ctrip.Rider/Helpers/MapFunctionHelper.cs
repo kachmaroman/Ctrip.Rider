@@ -21,15 +21,15 @@ namespace Ctrip.Rider.Helpers
 {
     public class MapFunctionHelper
     {
-        private string mapkey;
-        private GoogleMap map;
-        private double distance;
-        private double duration;
-        private string distanceString;
-        private string durationString;
-        private Marker pickupMarker;
-        private Marker driverLocationMarker;
-        private bool isRequestingDirection;
+	    public string mapkey;
+	    public GoogleMap map;
+	    public double distance;
+        public double duration;
+        public string distanceString;
+        public string durationString;
+        public Marker pickupMarker;
+        public Marker driverLocationMarker;
+        public bool isRequestingDirection;
 
         public MapFunctionHelper(string mapkey, GoogleMap map)
         {
@@ -175,7 +175,7 @@ namespace Ctrip.Rider.Helpers
             distanceString = directionData.routes[0].legs[0].distance.text;
         }
 
-        private double GetFare()
+        public double GetEstimatedFare()
         {
             double basefare = 20; //UAH 
             double distanceFare = 5; //UAH per kilometer
@@ -187,13 +187,6 @@ namespace Ctrip.Rider.Helpers
             double amount = kmfares + minsfares + basefare;
 
             return Math.Floor(amount / 10) * 10;
-        }
-
-        public string GetEstimatedFare()
-        {
-	        double fare = GetFare();
-            
-            return $"{fare} - {fare + 20} ₴";
         }
 
         public string GetDuration()

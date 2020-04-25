@@ -70,9 +70,14 @@
     <Compile Include="Activities\LoginActivity.cs" />
     <Compile Include="Activities\RegistrationActivity.cs" />
     <Compile Include="Activities\SplashActivity.cs" />
+    <Compile Include="DataModels\NewTripDetails.cs" />
     <Compile Include="Dtos\UserLoginDto.cs" />
     <Compile Include="Dtos\UserRegisterDto.cs" />
+    <Compile Include="EventListeners\CreateRequestEventListener.cs" />
     <Compile Include="EventListeners\TaskCompletionListener.cs" />
+    <Compile Include="EventListeners\UserProfileEventListener.cs" />
+    <Compile Include="Fragments\RequestDriver.cs" />
+    <Compile Include="Helpers\AppDataHelper.cs" />
     <Compile Include="Helpers\DirectionParser.cs" />
     <Compile Include="Helpers\FirebaseBuilder.cs" />
     <Compile Include="Helpers\GeocodingParser.cs" />
@@ -348,6 +353,9 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\position.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\request_driver.xml" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />

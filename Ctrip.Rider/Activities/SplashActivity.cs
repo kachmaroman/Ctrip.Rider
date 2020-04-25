@@ -1,5 +1,7 @@
 ﻿using Android.App;
 using Android.OS;
+using Ctrip.Rider.Helpers;
+using Firebase.Auth;
 
 namespace Ctrip.Rider.Activities
 {
@@ -9,14 +11,15 @@ namespace Ctrip.Rider.Activities
 		protected override void OnCreate(Bundle savedInstanceState)
 		{
 			base.OnCreate(savedInstanceState);
-
-			// Create your application here
 		}
 
 		protected override void OnResume()
 		{
 			base.OnResume();
-			StartActivity(typeof(LoginActivity));
+
+			FirebaseUser currentUser = AppDataHelper.GetCurrentUser();
+
+			StartActivity(currentUser == null ? typeof(LoginActivity) : typeof(MainActivity));
 		}
 	}
 }
