@@ -67,22 +67,33 @@
     <Reference Include="System.Numerics.Vectors" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Activities\GetStartedActivity.cs" />
     <Compile Include="Activities\LoginActivity.cs" />
+    <Compile Include="Activities\OnboardingActivity.cs" />
+    <Compile Include="Activities\PhoneValidationActivity.cs" />
+    <Compile Include="Activities\ProfileActivity.cs" />
     <Compile Include="Activities\RegistrationActivity.cs" />
     <Compile Include="Activities\SplashActivity.cs" />
+    <Compile Include="Constants\Enums.cs" />
     <Compile Include="DataModels\NewTripDetails.cs" />
+    <Compile Include="DataModels\Person.cs" />
     <Compile Include="Dtos\UserLoginDto.cs" />
     <Compile Include="Dtos\UserRegisterDto.cs" />
     <Compile Include="EventListeners\CreateRequestEventListener.cs" />
     <Compile Include="EventListeners\TaskCompletionListener.cs" />
     <Compile Include="EventListeners\UserProfileEventListener.cs" />
+    <Compile Include="Fragments\NoNetworkFragment.cs" />
     <Compile Include="Fragments\RequestDriver.cs" />
+    <Compile Include="Helpers\AlertDialogHelper.cs" />
     <Compile Include="Helpers\AppDataHelper.cs" />
+    <Compile Include="Helpers\CookieBarHelper.cs" />
     <Compile Include="Helpers\DirectionParser.cs" />
     <Compile Include="Helpers\FirebaseBuilder.cs" />
     <Compile Include="Helpers\GeocodingParser.cs" />
+    <Compile Include="Helpers\KeyboardHelper.cs" />
     <Compile Include="Helpers\LocationCallbackHelper.cs" />
     <Compile Include="Helpers\MapFunctionHelper.cs" />
+    <Compile Include="Helpers\PhoneVerificationCallback.cs" />
     <Compile Include="Helpers\Validator.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
@@ -124,11 +135,23 @@
     <AndroidResource Include="Resources\drawable\splash.xml" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Karamunting.Android.AviranAbady.CookieBar2">
+      <Version>1.1.3</Version>
+    </PackageReference>
+    <PackageReference Include="Karamunting.Android.MukeshSolanki.CountryPickerAndroid">
+      <Version>2.0.1</Version>
+    </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.3</Version>
     </PackageReference>
+    <PackageReference Include="Pinview">
+      <Version>1.0.1</Version>
+    </PackageReference>
     <PackageReference Include="Refractored.Controls.CircleImageView">
       <Version>1.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="Xam.Plugin.Connectivity">
+      <Version>2.2.12</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.Android.Maps.Utils">
       <Version>0.5.0</Version>
@@ -153,6 +176,9 @@
     </PackageReference>
     <PackageReference Include="Xamarin.Google.Android.Places">
       <Version>1.1.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.Google.LibPhoneNumber">
+      <Version>8.10.23</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
@@ -357,7 +383,66 @@
   <ItemGroup>
     <AndroidResource Include="Resources\layout\request_driver.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\onboarding_layout.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\bird.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\radial_frame_bg.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\border_bg.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\mipmap-hdpi\facebook.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_google.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\getting_started_layout.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\phone_validation_layout.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\progress_dialog_layout.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\no_network_layout.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\anim\slide_up_anim.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\anim\slide_up_out.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\primary_toolbar.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\gradient_bg.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\outline_btn_bg.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\primary_btn_bg.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\values\dimens.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_google.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\facebook.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\profile_layout.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
     Other similar extension points exist, see Microsoft.Common.targets.

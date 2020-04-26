@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/phone_val_root">
+
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/prim_toolbar1"
+        layout="@layout/primary_toolbar"
+    />
+
+    <com.goodiebag.pinview.Pinview
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/prim_toolbar1"
+        android:layout_marginTop="@dimen/mtrl_toolbar_default_height"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        app:forceKeyboard="false"
+        app:cursorVisible="true"
+        app:hint="0"
+        app:inputType="number"
+        app:pinWidth="40dp"
+        app:pinHeight="40dp"
+        app:pinLength="6"
+        android:id="@+id/phone_pinView"
+        
+    />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/enter_code_tv"
+        android:layout_below="@id/phone_pinView"
+        android:text="Text message sent to"
+        android:layout_centerHorizontal="true"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="8dp"
+
+    />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/timer_tv"
+        android:layout_below="@id/enter_code_tv"
+        android:text="Send me the code again"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/colorAccent"
+    />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:id="@+id/prim_btn1"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/primary_btn_bg"
+        android:layout_marginStart="@dimen/marrgin_start_end"
+        android:layout_marginEnd="@dimen/marrgin_start_end"
+        android:enabled="false"
+        android:layout_marginBottom="@dimen/margin_bottom"
+        android:text="Next"
+        android:textAllCaps="false"
+        android:textSize="22sp"
+        android:textColor="@android:color/white"
+    />
+
+</RelativeLayout>

@@ -1,0 +1,113 @@
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/get_started_root"
+    android:focusable="true"
+    android:fitsSystemWindows="true">
+
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/getting_started_toolbar"
+        layout="@layout/primary_toolbar"
+    />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/confirm_txt"
+        android:text="You'll get an SMS to\nconfirm your number"
+        android:textAlignment="center"
+        android:textSize="16sp"
+        android:textColor="@android:color/black"
+        android:layout_marginStart="@dimen/marrgin_start_end"
+        android:layout_marginEnd="@dimen/marrgin_start_end"
+        android:inputType="textMultiLine"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/getting_started_toolbar"
+        android:layout_marginTop="@dimen/mtrl_toolbar_default_height"
+    />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="4"
+        android:layout_marginStart="@dimen/marrgin_start_end"
+        android:layout_marginEnd="@dimen/marrgin_start_end"
+        android:orientation="horizontal"
+        android:id="@+id/mLinear_view"
+        android:layout_marginTop="@dimen/marrgin_start_end"
+        android:layout_below="@id/confirm_txt">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1.5"
+            android:orientation="horizontal"
+            android:weightSum="3"
+            android:background="@drawable/border_bg"
+            android:layout_marginEnd="8dp"
+            android:clickable="true"
+            android:id="@+id/cc_layout">
+
+            <Refractored.Controls.CircleImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:id="@+id/country_flag_img"
+                android:scaleType="centerCrop"
+                android:layout_weight="1"
+                android:layout_margin="8dp"
+                android:transitionName="cc_trans"
+            />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:id="@+id/cc_textview"
+                android:textSize="22sp"
+                android:layout_weight="2"
+                android:maxLength="4"
+                android:hint="+233"
+                android:gravity="center"
+                android:textColor="@android:color/black"
+                android:transitionName="cc_code_txt"
+            />
+        </LinearLayout>
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:id="@+id/user_phone_edittext"
+            android:layout_weight="2.5"
+            android:layout_alignParentEnd="true"
+            android:hint="0201234567"
+            android:inputType="phone"
+            android:textSize="22sp"
+            android:paddingLeft="16dp"
+            android:background="@drawable/border_bg"
+            android:textColor="@android:color/black"
+            android:imeOptions="actionDone"
+            android:transitionName="edittext_trans"
+        />
+        </LinearLayout>
+        
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:id="@+id/primary_btn"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/primary_btn_bg"
+        android:layout_marginStart="@dimen/marrgin_start_end"
+        android:layout_marginEnd="@dimen/marrgin_start_end"
+        android:layout_marginBottom="16dp"
+        android:text="Sign in"
+        android:textAllCaps="false"
+        android:textSize="22sp"
+        android:textColor="@android:color/darker_gray"
+        android:enabled="false"
+    />
+
+</RelativeLayout>

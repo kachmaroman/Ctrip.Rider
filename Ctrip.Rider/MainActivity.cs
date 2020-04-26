@@ -176,12 +176,12 @@ namespace Ctrip.Rider
             }
         }
 
-        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
-        {
-	        Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        //public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
+        //{
+	       // Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 
-	        base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
+	       // base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        //}
 
         protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
         {

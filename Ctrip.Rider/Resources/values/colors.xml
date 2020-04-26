@@ -11,4 +11,6 @@
 	<color name="ctripAccentClick">#A25508</color>
 	<color name="ctripAsh">#e2e2e2</color>
 	<color name="ctripBlack">#000</color>
+
+	<color name="facebookPrimary">#FF1870D0</color>
 </resources>

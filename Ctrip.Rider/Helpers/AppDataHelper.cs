@@ -1,8 +1,10 @@
 ﻿using Android.App;
 using Android.Content;
+using Ctrip.Rider.Activities;
 using Firebase;
 using Firebase.Auth;
 using Firebase.Database;
+using Java.Util.Concurrent;
 
 namespace Ctrip.Rider.Helpers
 {
@@ -47,6 +49,17 @@ namespace Ctrip.Rider.Helpers
 			return FirebaseAuth.Instance.CurrentUser;
 		}
 
+		public static void SendVerificationCode(string numeroCelular, PhoneValidationActivity instance)
+		{
+			GetDatabase();
+
+			PhoneVerificationCallback phoneAuthCallbacks = new PhoneVerificationCallback(instance);
+
+			FirebaseAuth auth = GetFirebaseAuth();
+
+			PhoneAuthProvider.GetInstance(auth).VerifyPhoneNumber(numeroCelular, 30, TimeUnit.Seconds, instance, phoneAuthCallbacks);
+		}
+
 		public static string GetFullName()
 		{
 			return Preferences.GetString("fullname", string.Empty);
@@ -60,6 +73,11 @@ namespace Ctrip.Rider.Helpers
 		public static string GetPhone()
 		{
 			return Preferences.GetString("phone", string.Empty);
+		}
+
+		public static string GetIntFormat()
+		{
+			return Preferences.GetString("int_format", string.Empty);
 		}
 	}
 }

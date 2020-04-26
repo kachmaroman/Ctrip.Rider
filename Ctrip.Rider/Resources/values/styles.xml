@@ -1,33 +1,46 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
-	
-	<style name="MyTheme.Splash" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowBackground">@drawable/splash</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowFullscreen">true</item>
-    </style>
+	<!-- Base application theme. -->
+	<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+		<item name="colorPrimary">@color/colorPrimary</item>
+		<item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+		<item name="colorAccent">@color/colorAccent</item>
+		<item name="windowNoTitle">true</item>
+		<item name="android:textColorPrimary">@android:color/black</item>
+		<item name="windowActionModeOverlay">true</item>
+		<item name="android:windowContentTransitions">true</item>
+		<item name="android:textColorSecondary">@android:color/black</item>
+	</style>
 
-  <style name="CtripTheme" parent="Theme.AppCompat.Light.NoActionBar">
-    <item name="colorPrimary">@color/ctripPrimary</item>
-    <item name="colorPrimaryDark">@color/ctripPrimaryDark</item>
-    <item name="colorAccent">@color/ctripAccentColor</item>
-  </style>
+	<style name="AppTheme.MainScreen" parent="AppTheme">
+		<item name="android:statusBarColor">@color/colorAccent</item>
+	</style>
+
+	<style name="MyTheme.Splash" parent="Theme.AppCompat.Light.NoActionBar">
+		<item name="android:windowBackground">@drawable/splash</item>
+		<item name="android:windowNoTitle">true</item>
+		<item name="android:windowFullscreen">true</item>
+	</style>
+
+	<style name="CtripTheme" parent="Theme.AppCompat.Light.NoActionBar">
+		<item name="colorPrimary">@color/ctripPrimary</item>
+		<item name="colorPrimaryDark">@color/ctripPrimaryDark</item>
+		<item name="colorAccent">@color/ctripAccentColor</item>
+	</style>
 
 	<style name="CtripTheme.ActionBar.Transparent" parent="CtripTheme">
 		<item name="colorPrimary">@android:color/transparent</item>
 	</style>
 
-    <style name="NavigationStyle" parent="Theme.AppCompat.Light.NoActionBar">
-	    <item name="colorPrimary">@color/ctripAccentColor</item>
-	    <item name="colorPrimaryDark">@color/ctripAccentColor</item>
-	    <item name="colorAccent">@color/ctripAccentColor</item>
-    </style>
+	<style name="NavigationStyle" parent="Theme.AppCompat.Light.NoActionBar">
+		<item name="colorPrimary">@color/ctripAccentColor</item>
+		<item name="colorPrimaryDark">@color/ctripAccentColor</item>
+		<item name="colorAccent">@color/ctripAccentColor</item>
+	</style>
+
+	<style name="FullScreenDG" parent="Theme.AppCompat.Light.DialogWhenLarge">
+		<item name="android:statusBarColor">#FF404850</item>
+		<item name="windowNoTitle">true</item>
+	</style>
 
 </resources>
