@@ -58,10 +58,10 @@ namespace Ctrip.Rider.EventListeners
 			await _newTripRef.SetValueAsync(trip);
 		}
 
-		public async Task CancelRequestAsync()
+		public void CancelRequestAsync()
 		{
 			_newTripRef.RemoveEventListener(this);
-			await _newTripRef.RemoveValueAsync();
+			_newTripRef.RemoveValue();
 		}
 	}
 }

@@ -38,9 +38,9 @@ namespace Ctrip.Rider
 	[Activity(Label = "@string/app_name", Theme = "@style/CtripTheme", MainLauncher = false)]
 	public class MainActivity : AppCompatActivity, IOnMapReadyCallback, IOnPageChangeListener
 	{
-		//FireBase
 		private readonly UserProfileEventListener _profileEventListener = new UserProfileEventListener();
-		private CreateRequestEventListener _requestEventListener;
+
+		public CreateRequestEventListener RequestEventListener { get; set; }
 
 		//Views
 		private Toolbar _mainToolbar;
@@ -70,10 +70,7 @@ namespace Ctrip.Rider
 
 		//Buttons
 		private FloatingActionButton _myLocation;
-		private Button _requestDriverButton;
-
-		//Fragments
-		private RequestDriver _requestDriverFragment;
+		private Button _requestRideBnt;
 
 		private readonly string[] _permissionGroupLocation =
 			{Manifest.Permission.AccessCoarseLocation, Manifest.Permission.AccessFineLocation};
@@ -114,6 +111,7 @@ namespace Ctrip.Rider
 		private const int RequestCodePickup = 1;
 		private const int RequestCodeDestination = 2;
 
+		internal static MainActivity Instance { get; set; }
 
 		private void ConnectControls()
 		{
@@ -142,10 +140,10 @@ namespace Ctrip.Rider
 			_destinationProgress = FindViewById<ProgressBar>(Resource.Id.destiopnationProgress);
 
 			_myLocation = FindViewById<FloatingActionButton>(Resource.Id.fab_myloc);
-			_requestDriverButton = FindViewById<Button>(Resource.Id.ride_select_btn);
+			_requestRideBnt = FindViewById<Button>(Resource.Id.ride_select_btn);
 
 			_myLocation.Click += MyLocation_Click;
-			_requestDriverButton.Click += RequestDriverButton_Click;
+			_requestRideBnt.Click += RequestRideBntClick;
 
 			_viewPager = FindViewById<ViewPager>(Resource.Id.viewPager);
 
@@ -174,6 +172,8 @@ namespace Ctrip.Rider
 
 			SetContentView(Resource.Layout.activity_main);
 			ConnectControls();
+
+			Instance = this;
 
 			SupportMapFragment mapFragment = (SupportMapFragment)SupportFragmentManager.FindFragmentById(Resource.Id.map);
 			mapFragment.GetMapAsync(this);
@@ -286,16 +286,14 @@ namespace Ctrip.Rider
 			}
 		}
 
-		private async void RequestDriverButton_Click(object sender, EventArgs e)
+		private async void RequestRideBntClick(object sender, EventArgs e)
 		{
-			_requestDriverFragment = new RequestDriver(_mapHelper.GetEstimatedFare())
-			{
-				Cancelable = false
-			};
+			_tripDetailsBehavior.Hideable = true;
+			_bottomSheetRootBehavior.Hideable = true;
+			_tripDetailsBehavior.State = BottomSheetBehavior.StateHidden;
+			_bottomSheetRootBehavior.State = BottomSheetBehavior.StateHidden;
 
-			FragmentTransaction fragmentTransaction = SupportFragmentManager.BeginTransaction();
-			_requestDriverFragment.Show(fragmentTransaction, "Request");
-			_requestDriverFragment.CancelRequest += RequestDriverFragment_CancelRequest;
+			FindingDriverDialog.Display(SupportFragmentManager, false, _pickupAddress, _destinationAddress, _mapHelper.durationString, _mapHelper.GetEstimatedFare());
 
 			_newTripDetails = new NewTripDetails
 			{
@@ -314,22 +312,8 @@ namespace Ctrip.Rider
 				Timestamp = DateTime.Now
 			};
 
-			_requestEventListener = new CreateRequestEventListener(_newTripDetails);
-			await _requestEventListener.CreateRequestAsync();
-		}
-
-		private async void RequestDriverFragment_CancelRequest(object sender, EventArgs e)
-		{
-			if (_requestDriverFragment == null || _requestEventListener == null)
-			{
-				return;
-			}
-
-			await _requestEventListener.CancelRequestAsync();
-			_requestDriverFragment.Dismiss();
-
-			_requestEventListener = null;
-			_requestDriverFragment = null;
+			RequestEventListener = new CreateRequestEventListener(_newTripDetails);
+			await RequestEventListener.CreateRequestAsync();
 		}
 
 		#endregion
