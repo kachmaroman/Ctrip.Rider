@@ -137,7 +137,7 @@ namespace Ctrip.Rider.Helpers
 
             MarkerOptions pickupMarkerOptions = new MarkerOptions();
             pickupMarkerOptions.SetPosition(firstpoint);
-            pickupMarkerOptions.SetTitle("Pickup Location");
+            pickupMarkerOptions.SetTitle("Pickup");
             pickupMarkerOptions.SetIcon(BitmapDescriptorFactory.DefaultMarker(BitmapDescriptorFactory.HueGreen));
 
             MarkerOptions destinationMarkerOptions = new MarkerOptions();
@@ -177,16 +177,18 @@ namespace Ctrip.Rider.Helpers
 
         public double GetEstimatedFare()
         {
-            double basefare = 20; //UAH 
+	        const double minFare = 40;
+            double baseFare = 30; //UAH 
             double distanceFare = 5; //UAH per kilometer
-            double timefare = 3; //UAH per minute
+            double timeFare = 3; //UAH per minute
 
-            double kmfares = (distance / 1000) * distanceFare;
-            double minsfares = (duration / 60) * timefare;
+            double kmFare = (distance / 1000) * distanceFare;
+            double minsFare = (duration / 60) * timeFare;
 
-            double amount = kmfares + minsfares + basefare;
+            double amount = baseFare + kmFare + minsFare;
+            double fare = Math.Floor(amount / 10) * 10;
 
-            return Math.Floor(amount / 10) * 10;
+            return fare < minFare ? minFare : fare;
         }
 
         public string GetDuration()

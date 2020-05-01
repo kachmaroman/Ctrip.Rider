@@ -62,7 +62,17 @@ namespace Ctrip.Rider.Helpers
 
 		public static string GetFullName()
 		{
-			return Preferences.GetString("fullname", string.Empty);
+			return $"{GetFirstname()} {GetLastName()}";
+		}
+
+		public static string GetFirstname()
+		{
+			return Preferences.GetString("firstname", string.Empty);
+		}
+
+		public static string GetLastName()
+		{
+			return Preferences.GetString("lastname", string.Empty);
 		}
 
 		public static string GetEmail()

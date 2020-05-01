@@ -15,73 +15,81 @@ using Android.Support.V7.App;
 using Android.Runtime;
 using Android.Support.Design.Widget;
 using Android.Support.V4.Content;
+using Android.Support.V4.View;
 using Android.Support.V4.Widget;
 using Android.Views;
 using Android.Widget;
+using Ctrip.Rider.Adapters;
 using Ctrip.Rider.DataModels;
 using Ctrip.Rider.EventListeners;
 using Ctrip.Rider.Fragments;
 using Ctrip.Rider.Helpers;
 using Google.Places;
+using Java.Util;
 using ActionBar = Android.Support.V7.App.ActionBar;
 using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
 using Location = Android.Locations.Location;
 using Toolbar = Android.Support.V7.Widget.Toolbar;
+using static Android.Support.V4.View.ViewPager;
 using Result = Android.App.Result;
 
 namespace Ctrip.Rider
 {
-    [Activity(Label = "@string/app_name", Theme = "@style/CtripTheme", MainLauncher = false)]
-    public class MainActivity : AppCompatActivity, IOnMapReadyCallback
-    {
-	    //FireBase
-	    private readonly UserProfileEventListener _profileEventListener = new UserProfileEventListener();
-	    private CreateRequestEventListener _requestEventListener;
+	[Activity(Label = "@string/app_name", Theme = "@style/CtripTheme", MainLauncher = false)]
+	public class MainActivity : AppCompatActivity, IOnMapReadyCallback, IOnPageChangeListener
+	{
+		//FireBase
+		private readonly UserProfileEventListener _profileEventListener = new UserProfileEventListener();
+		private CreateRequestEventListener _requestEventListener;
 
 		//Views
-        private Toolbar _mainToolbar;
-        private DrawerLayout _drawerLayout;
+		private Toolbar _mainToolbar;
+		private DrawerLayout _drawerLayout;
 
 		//TextViews
 		private TextView _accountTitleText;
-        private TextView _pickupLocationText;
-        private TextView _destinationText;
+		private TextView _fromLocationText;
+		private TextView _toLocationText;
+		private TextView _pickupText;
+		private TextView _destinationText;
+		private TextView _greetings_tv;
 
-		//ImageView
-		private ImageView _centerMarker;
+		//Progresses
+		private ProgressBar _pickupProgress;
+		private ProgressBar _destinationProgress;
 
-        //Layouts
-        private RelativeLayout _layoutPickUp;
-        private RelativeLayout _layoutDestination;
+		//Layouts
+		private RelativeLayout _bottomSheetRootView;
+		private RelativeLayout _tripDetailsView;
+		private RelativeLayout _layoutPickUp;
+		private RelativeLayout _layoutDestination;
 
 		//Bottom-sheets
-		BottomSheetBehavior _tripDetailsBottomSheetBehavior;
+		private BottomSheetBehavior _bottomSheetRootBehavior;
+		private BottomSheetBehavior _tripDetailsBehavior;
 
 		//Buttons
-		private RadioButton _pickupRadio;
-		private RadioButton _destitationRadio;
-		private Button _favouritePlacesButton;
-		private Button _locationSetButton;
+		private FloatingActionButton _myLocation;
 		private Button _requestDriverButton;
 
 		//Fragments
-		private RequestDriver requestDriverFragment;
+		private RequestDriver _requestDriverFragment;
 
 		private readonly string[] _permissionGroupLocation =
-	        {Manifest.Permission.AccessCoarseLocation, Manifest.Permission.AccessFineLocation};
+			{Manifest.Permission.AccessCoarseLocation, Manifest.Permission.AccessFineLocation};
 
-        private const int RequestLocationId = 0;
+		private const int RequestLocationId = 0;
 
-        private GoogleMap _googleMap;
-        private LocationRequest _mLocationRequest;
-        private FusedLocationProviderClient _locationProviderClient;
-        private Location _mLastLocation;
-        private LocationCallbackHelper _mLocationCalback;
+		private GoogleMap _googleMap;
+		private LocationRequest _mLocationRequest;
+		private FusedLocationProviderClient _locationProviderClient;
+		private Location _mLastLocation;
+		private LocationCallbackHelper _mLocationCalback;
 
-        private static readonly int UpdateInterval = 5; //5 SECONDS
-        private static readonly int FastestInterval = 5;
-        private static readonly int Displacement = 3; //meters
-        private static readonly int Zoom = 15;
+		private static readonly int UpdateInterval = 5; //5 SECONDS
+		private static readonly int FastestInterval = 5;
+		private static readonly int Displacement = 3; //meters
+		private static readonly float Zoom = 16.0f;
 
 		//Helpers
 		MapFunctionHelper _mapHelper;
@@ -91,52 +99,71 @@ namespace Ctrip.Rider
 		private LatLng _destinationLatLng;
 		private string _pickupAddress;
 		private string _destinationAddress;
+		private ViewPager _viewPager;
+		private PagerAdapter _pagerAdapter;
+		private List<RideTypeDataModel> _rideTypeList;
 
 		//Flags
-		private int _addressRequest = 1;
-		private bool _takeAddressFromSearch = false;
+		//private bool _takeAddressFromSearch = false;
+		private bool _isTripDrawn = false;
 
-	    //DataModels
-	    private NewTripDetails _newTripDetails;
+		//DataModels
+		private NewTripDetails _newTripDetails;
+
+		//Constants
+		private const int RequestCodePickup = 1;
+		private const int RequestCodeDestination = 2;
 
 
-	    private void ConnectControls()
-	    {
-		    _drawerLayout = FindViewById<DrawerLayout>(Resource.Id.drawerLayout);
-		    _mainToolbar = FindViewById<Toolbar>(Resource.Id.mainToolbar);
+		private void ConnectControls()
+		{
+			_drawerLayout = FindViewById<DrawerLayout>(Resource.Id.drawerLayout);
+			_mainToolbar = FindViewById<Toolbar>(Resource.Id.mainToolbar);
 
-		    SetSupportActionBar(_mainToolbar);
+			SetSupportActionBar(_mainToolbar);
 
-		    SupportActionBar.Title = string.Empty;
+			SupportActionBar.Title = string.Empty;
 
-		    ActionBar actionBar = SupportActionBar;
-		    actionBar.SetHomeAsUpIndicator(Resource.Mipmap.ic_menu_action);
-		    actionBar.SetDisplayHomeAsUpEnabled(true);
+			ActionBar actionBar = SupportActionBar;
+			actionBar.SetHomeAsUpIndicator(Resource.Mipmap.ic_menu_action);
+			actionBar.SetDisplayHomeAsUpEnabled(true);
 
-		    _pickupLocationText = FindViewById<TextView>(Resource.Id.pickupLocationText);
-		    _destinationText = FindViewById<TextView>(Resource.Id.destinationText);
-		    _layoutPickUp = FindViewById<RelativeLayout>(Resource.Id.layoutPickup);
-		    _layoutDestination = FindViewById<RelativeLayout>(Resource.Id.layoutDestination);
-		    _layoutPickUp.Click += LayoutPickUp_Click;
-		    _layoutDestination.Click += LayoutDestination_Click;
+			_fromLocationText = FindViewById<TextView>(Resource.Id.from_tv);
+			_toLocationText = FindViewById<TextView>(Resource.Id.to_tv);
+			_pickupText = FindViewById<TextView>(Resource.Id.pickupText);
+			_destinationText = FindViewById<TextView>(Resource.Id.destinationText);
+			_greetings_tv = FindViewById<TextView>(Resource.Id.greetings_tv);
+			_layoutPickUp = FindViewById<RelativeLayout>(Resource.Id.layoutPickup);
+			_layoutDestination = FindViewById<RelativeLayout>(Resource.Id.layoutDestination);
+			_layoutPickUp.Click += (sender, e) => StartAutoComplete(RequestCodePickup);
+			_layoutDestination.Click += (sender, e) => StartAutoComplete(RequestCodeDestination);
 
-		    _pickupRadio = FindViewById<RadioButton>(Resource.Id.pickupRadio);
-		    _destitationRadio = FindViewById<RadioButton>(Resource.Id.destinationRadio);
-		    _favouritePlacesButton = FindViewById<Button>(Resource.Id.favouritePlacesButton);
-		    _locationSetButton = FindViewById<Button>(Resource.Id.locationsSetButton);
-		    _requestDriverButton = FindViewById<Button>(Resource.Id.requestDriverButton);
+			_pickupProgress = FindViewById<ProgressBar>(Resource.Id.pickupProgress);
+			_destinationProgress = FindViewById<ProgressBar>(Resource.Id.destiopnationProgress);
 
-			_pickupRadio.Click += PickupRadio_Click;
-		    _destitationRadio.Click += DestinationRadio_Click;
-		    _favouritePlacesButton.Click += FavouritePlacesButoon_Click;
-		    _locationSetButton.Click += LocationSetButton_Click;
-		    _requestDriverButton.Click += RequestDriverButton_Click;
+			_myLocation = FindViewById<FloatingActionButton>(Resource.Id.fab_myloc);
+			_requestDriverButton = FindViewById<Button>(Resource.Id.ride_select_btn);
 
-		    _centerMarker = FindViewById<ImageView>(Resource.Id.centerMarker);
+			_myLocation.Click += MyLocation_Click;
+			_requestDriverButton.Click += RequestDriverButton_Click;
 
-		    FrameLayout tripDetailsView = FindViewById<FrameLayout>(Resource.Id.tripdetails_bottomsheet);
-		    _tripDetailsBottomSheetBehavior = BottomSheetBehavior.From(tripDetailsView);
-	    }
+			_viewPager = FindViewById<ViewPager>(Resource.Id.viewPager);
+
+			_bottomSheetRootView = FindViewById<RelativeLayout>(Resource.Id.main_sheet_root);
+			_tripDetailsView = FindViewById<RelativeLayout>(Resource.Id.trip_root);
+			_bottomSheetRootBehavior = BottomSheetBehavior.From(_bottomSheetRootView);
+			_tripDetailsBehavior = BottomSheetBehavior.From(_tripDetailsView);
+
+			_bottomSheetRootBehavior.PeekHeight = BottomSheetBehavior.PeekHeightAuto;
+			_bottomSheetRootBehavior.State = BottomSheetBehavior.StateHidden;
+
+			if (!_isTripDrawn)
+			{
+				_tripDetailsBehavior.State = BottomSheetBehavior.StateHidden;
+			}
+
+			_greetings_tv.Text = GetGreetings();
+		}
 
 		#region Overrides
 
@@ -162,158 +189,113 @@ namespace Ctrip.Rider
 			_accountTitleText.Text = AppDataHelper.GetFullName();
 
 			InitializePlaces();
+
+			_rideTypeList = new List<RideTypeDataModel>();
 		}
 
 		public override bool OnOptionsItemSelected(IMenuItem item)
-        {
-	        switch (item.ItemId)
-	        {
-                case Android.Resource.Id.Home:
-	                _drawerLayout.OpenDrawer((int)GravityFlags.Left);
-	                return true;
-                default:
-	                return base.OnOptionsItemSelected(item);
-            }
-        }
+		{
+			switch (item.ItemId)
+			{
+				case Android.Resource.Id.Home:
+					_drawerLayout.OpenDrawer((int)GravityFlags.Left);
+					return true;
+				default:
+					return base.OnOptionsItemSelected(item);
+			}
+		}
 
-        //public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
-        //{
-	       // Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+		protected override async void OnActivityResult(int requestCode, Result resultCode, Intent data)
+		{
+			base.OnActivityResult(requestCode, resultCode, data);
 
-	       // base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
-        //}
+			if (requestCode == RequestCodePickup)
+			{
+				if (resultCode == Result.Ok)
+				{
+					_pickupProgress.Visibility = ViewStates.Visible;
 
-        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
-        {
-	        base.OnActivityResult(requestCode, resultCode, data);
+					Place place = Autocomplete.GetPlaceFromIntent(data);
+					_pickupText.Text = place.Name;
+					_fromLocationText.Text = place.Name;
+					_pickupLocationLatlng = place.LatLng;
+					_pickupAddress = place.Name;
+					_layoutPickUp.Enabled = false;
 
-	        if (requestCode == 1)
-	        {
-		        if (resultCode == Result.Ok)
-		        {
-			        _takeAddressFromSearch = true;
-			        _pickupRadio.Checked = false;
-			        _destitationRadio.Checked = false;
+					_pickupProgress.Visibility = ViewStates.Gone;
+				}
+				else if (resultCode == Result.Canceled)
+				{
+					_pickupProgress.Visibility = ViewStates.Gone;
+				}
+			}
 
-			        Place place = Autocomplete.GetPlaceFromIntent(data);
-			        _pickupLocationText.Text = place.Name;
-			        _pickupLocationLatlng = place.LatLng;
-			        _pickupAddress = place.Name;
-			        _googleMap.AnimateCamera(CameraUpdateFactory.NewLatLngZoom(place.LatLng, 15));
-			        _centerMarker.SetColorFilter(Color.DarkGreen);
-		        }
-	        }
+			if (requestCode == RequestCodeDestination)
+			{
+				if (resultCode == Result.Ok)
+				{
+					_destinationProgress.Visibility = ViewStates.Visible;
 
-	        if (requestCode == 2)
-	        {
-		        if (resultCode == Result.Ok)
-		        {
-			        _takeAddressFromSearch = true;
-			        _pickupRadio.Checked = false;
-			        _destitationRadio.Checked = false;
+					Place place = Autocomplete.GetPlaceFromIntent(data);
+					_destinationText.Text = place.Name;
+					_destinationLatLng = place.LatLng;
+					_destinationAddress = place.Name;
+					_layoutDestination.Enabled = false;
 
-			        Place place = Autocomplete.GetPlaceFromIntent(data);
-			        _destinationText.Text = place.Name;
-			        _destinationLatLng = place.LatLng;
-			        _destinationAddress = place.Name;
-			        _googleMap.AnimateCamera(CameraUpdateFactory.NewLatLngZoom(place.LatLng, 15));
-			        _centerMarker.SetColorFilter(Color.Red);
-			        TripLocationsSet();
-		        }
-	        }
-        }
+					await TripLocationsSet();
+				}
+				else if (resultCode == Result.Canceled)
+				{
+					_destinationProgress.Visibility = ViewStates.Gone;
+				}
+			}
+		}
+
+		public override void OnBackPressed()
+		{
+			if (_drawerLayout.IsDrawerOpen((int)GravityFlags.Start))
+			{
+				_drawerLayout.CloseDrawer((int)GravityFlags.Start);
+			}
+			else
+			{
+				if (_isTripDrawn)
+				{
+					ResetTrip();
+				}
+				else
+				{
+					base.OnBackPressed();
+				}
+			}
+		}
 
 		#endregion
 
 		#region Click Event Handlesrs
 
-		private void LayoutPickUp_Click(object sender, EventArgs e)
-        {
-	        List<Place.Field> fields = new List<Place.Field>
-            {
-	            Place.Field.Id, Place.Field.Name, Place.Field.LatLng, Place.Field.Address
-            };
-
-            Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.Overlay, fields)
-	            .SetCountry("UA")
-	            .Build(this);
-
-            StartActivityForResult(intent, 1);
-        }
-
-        private void LayoutDestination_Click(object sender, EventArgs e)
-        {
-	        List<Place.Field> fields = new List<Place.Field>
-	        {
-		        Place.Field.Id, Place.Field.Name, Place.Field.LatLng, Place.Field.Address
-	        };
-
-	        Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.Overlay, fields)
-		        .SetCountry("UA")
-		        .Build(this);
-
-	        StartActivityForResult(intent, 2);
-        }
-
-        private void PickupRadio_Click(object sender, EventArgs e)
-        {
-	        _addressRequest = 1;
-	        _pickupRadio.Checked = true;
-			_destitationRadio.Checked = false;
-			_takeAddressFromSearch = false;
-			_centerMarker.SetColorFilter(Color.DarkGreen);
-        }
-
-        private void DestinationRadio_Click(object sender, EventArgs e)
-        {
-	        _addressRequest = 2;
-	        _destitationRadio.Checked = true;
-			_pickupRadio.Checked = false;
-			_takeAddressFromSearch = false;
-			_centerMarker.SetColorFilter(Color.Red);
+		private async void MyLocation_Click(object sender, EventArgs e)
+		{
+			if (_pickupLocationLatlng != null && !_isTripDrawn)
+			{
+				_googleMap.AnimateCamera(CameraUpdateFactory.NewLatLngZoom(_pickupLocationLatlng, Zoom));
+			}
+			else if (_pickupLocationLatlng == null && !_isTripDrawn)
+			{
+				await GetCurrentLocationAsync();
+			}
 		}
 
-        private void FavouritePlacesButoon_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private async void LocationSetButton_Click(object sender, EventArgs e)
-        {
-	        _locationSetButton.Text = "Plsease wait...";
-			_locationSetButton.Enabled = false;
-
-			string json = await _mapHelper.GetDirectionJsonAsync(_pickupLocationLatlng, _destinationLatLng);
-
-			if (!string.IsNullOrEmpty(json))
+		private async void RequestDriverButton_Click(object sender, EventArgs e)
+		{
+			_requestDriverFragment = new RequestDriver(_mapHelper.GetEstimatedFare())
 			{
-				TextView txtFare = FindViewById<TextView>(Resource.Id.tripEstimateFareText);
-				TextView txtTime = FindViewById<TextView>(Resource.Id.newTripTimeText);
-
-				_mapHelper.DrawTripOnMap(json);
-
-				double estimatedFare = _mapHelper.GetEstimatedFare();
-
-				txtFare.Text = $"{estimatedFare} - {estimatedFare + 20} ₴";
-				txtTime.Text = _mapHelper.GetDuration();
-
-				_tripDetailsBottomSheetBehavior.State = BottomSheetBehavior.StateExpanded;
-
-				TripDrawnOnMap();
-			}
-
-			_locationSetButton.Text = "Done";
-			_locationSetButton.Enabled = true;
-        }
-
-        private async void RequestDriverButton_Click(object sender, EventArgs e)
-        {
-	        requestDriverFragment = new RequestDriver(_mapHelper.GetEstimatedFare());
-			requestDriverFragment.Cancelable = false;
+				Cancelable = false
+			};
 
 			FragmentTransaction fragmentTransaction = SupportFragmentManager.BeginTransaction();
-			requestDriverFragment.Show(fragmentTransaction, "Request");
-			requestDriverFragment.CancelRequest += RequestDriverFragment_CancelRequest;
+			_requestDriverFragment.Show(fragmentTransaction, "Request");
+			_requestDriverFragment.CancelRequest += RequestDriverFragment_CancelRequest;
 
 			_newTripDetails = new NewTripDetails
 			{
@@ -334,152 +316,276 @@ namespace Ctrip.Rider
 
 			_requestEventListener = new CreateRequestEventListener(_newTripDetails);
 			await _requestEventListener.CreateRequestAsync();
-        }
+		}
 
-        private async void RequestDriverFragment_CancelRequest(object sender, EventArgs e)
-        {
-	        if (requestDriverFragment == null || _requestEventListener == null)
-	        {
-		        return;
-	        }
+		private async void RequestDriverFragment_CancelRequest(object sender, EventArgs e)
+		{
+			if (_requestDriverFragment == null || _requestEventListener == null)
+			{
+				return;
+			}
 
-	        await _requestEventListener.CancelRequestAsync();
-	        requestDriverFragment.Dismiss();
+			await _requestEventListener.CancelRequestAsync();
+			_requestDriverFragment.Dismiss();
 
-	        _requestEventListener = null;
-	        requestDriverFragment = null;
-        }
+			_requestEventListener = null;
+			_requestDriverFragment = null;
+		}
 
 		#endregion
 
 		#region Map And Location
 
-		public void OnMapReady(GoogleMap googleMap)
+		public async void OnMapReady(GoogleMap googleMap)
 		{
 			_googleMap = googleMap;
-			_googleMap.CameraIdle += MainMap_CameraIdle;
+			_googleMap.MyLocationEnabled = true;
+			_googleMap.UiSettings.MyLocationButtonEnabled = false;
+			_googleMap.UiSettings.CompassEnabled = false;
+			_googleMap.UiSettings.RotateGesturesEnabled = false;
+			_googleMap.UiSettings.MapToolbarEnabled = false;
 
-			string mapKey = Resources.GetString(Resource.String.mapKey);
-			_mapHelper = new MapFunctionHelper(mapKey, _googleMap);
+			_pickupProgress.Visibility = ViewStates.Visible;
+
+			await GetCurrentLocationAsync();
+
+			_mapHelper = new MapFunctionHelper(Resources.GetString(Resource.String.mapKey), _googleMap);
+
+			_pickupLocationLatlng = _googleMap.CameraPosition.Target;
+			_pickupAddress = await _mapHelper.FindCordinateAddress(_pickupLocationLatlng);
+
+			_pickupText.Text = _pickupAddress;
+			_fromLocationText.Text = _pickupAddress;
+			_pickupProgress.Visibility = ViewStates.Gone;
 		}
 
 		private async Task GetCurrentLocationAsync()
-        {
-	        if (!CheckLocationPermissions())
-	        {
-		        return;
-	        }
+		{
+			if (!CheckLocationPermissions())
+			{
+				return;
+			}
 
-	        _mLastLocation = await _locationProviderClient.GetLastLocationAsync();
+			_mLastLocation = await _locationProviderClient.GetLastLocationAsync();
 
-	        if (_mLastLocation != null)
-	        {
-		        LatLng currentLocation = new LatLng(_mLastLocation.Latitude, _mLastLocation.Longitude);
-		        _googleMap.MoveCamera(CameraUpdateFactory.NewLatLngZoom(currentLocation, Zoom));
-	        }
-        }
+			if (_mLastLocation != null)
+			{
+				LatLng currentLocation = new LatLng(_mLastLocation.Latitude, _mLastLocation.Longitude);
+				_googleMap.MoveCamera(CameraUpdateFactory.NewLatLngZoom(currentLocation, Zoom));
+			}
+		}
 
-        private void CurrentLocationCallback(object sender, OnLocationCapturedEventArgs e)
-        {
-	        _mLastLocation = e.Location;
-	        LatLng currentPosition = new LatLng(_mLastLocation.Latitude, _mLastLocation.Longitude);
-	        _googleMap.AnimateCamera(CameraUpdateFactory.NewLatLngZoom(currentPosition, 12));
-        }
+		private void CurrentLocationCallback(object sender, OnLocationCapturedEventArgs e)
+		{
+			_mLastLocation = e.Location;
+			LatLng currentPosition = new LatLng(_mLastLocation.Latitude, _mLastLocation.Longitude);
+			_googleMap.AnimateCamera(CameraUpdateFactory.NewLatLngZoom(currentPosition, Zoom));
+			SetTripUi();
+		}
 
-        private async Task StartLocationUpdatesAsync()
-        {
-	        if (CheckLocationPermissions())
-	        {
-		        await _locationProviderClient.RequestLocationUpdatesAsync(_mLocationRequest, _mLocationCalback, null);
-	        }
-        }
+		private async Task StartLocationUpdatesAsync()
+		{
+			if (CheckLocationPermissions())
+			{
+				await _locationProviderClient.RequestLocationUpdatesAsync(_mLocationRequest, _mLocationCalback, null);
+			}
+		}
 
-        private async Task StopLocationUpdatesAsync()
-        {
-	        if (_locationProviderClient != null && _mLocationCalback != null)
-	        {
-		        await _locationProviderClient.RemoveLocationUpdatesAsync(_mLocationCalback);
-	        }
-        }
+		private async Task StopLocationUpdatesAsync()
+		{
+			if (_locationProviderClient != null && _mLocationCalback != null)
+			{
+				await _locationProviderClient.RemoveLocationUpdatesAsync(_mLocationCalback);
+			}
+		}
 
-        private void InitializePlaces()
-        {
-	        string mapKey = Resources.GetString(Resource.String.mapKey);
+		private void InitializePlaces()
+		{
+			string mapKey = Resources.GetString(Resource.String.mapKey);
 
-	        if (!PlacesApi.IsInitialized)
-	        {
-		        PlacesApi.Initialize(this, mapKey);
-	        }
-        }
+			if (!PlacesApi.IsInitialized)
+			{
+				PlacesApi.Initialize(this, mapKey);
+			}
+		}
 
-        private async void MainMap_CameraIdle(object sender, EventArgs e)
-        {
-	        if (!_takeAddressFromSearch)
-	        {
-		        if (_addressRequest == 1)
-		        {
-			        _pickupLocationLatlng = _googleMap.CameraPosition.Target;
-			        _pickupAddress = await _mapHelper.FindCordinateAddress(_pickupLocationLatlng);
-			        _pickupLocationText.Text = _pickupAddress;
-		        }
-		        else if (_addressRequest == 2)
-		        {
-			        _destinationLatLng = _googleMap.CameraPosition.Target;
-			        _destinationAddress = await _mapHelper.FindCordinateAddress(_destinationLatLng);
-			        _destinationText.Text = _destinationAddress;
+		private void CreateLocationRequest()
+		{
+			_mLocationRequest = new LocationRequest();
+			_mLocationRequest.SetInterval(UpdateInterval);
+			_mLocationRequest.SetFastestInterval(FastestInterval);
+			_mLocationRequest.SetSmallestDisplacement(Displacement);
+			_mLocationRequest.SetPriority(LocationRequest.PriorityHighAccuracy);
 
-					TripLocationsSet();
-		        }
-	        }
-        }
+			_locationProviderClient = LocationServices.GetFusedLocationProviderClient(this);
 
-        private void CreateLocationRequest()
-        {
-	        _mLocationRequest = new LocationRequest();
-	        _mLocationRequest.SetInterval(UpdateInterval);
-	        _mLocationRequest.SetFastestInterval(FastestInterval);
-	        _mLocationRequest.SetSmallestDisplacement(Displacement);
-	        _mLocationRequest.SetPriority(LocationRequest.PriorityHighAccuracy);
+			_mLocationCalback = new LocationCallbackHelper();
+			_mLocationCalback.CurrentLocation += CurrentLocationCallback;
+		}
 
-	        _locationProviderClient = LocationServices.GetFusedLocationProviderClient(this);
+		private bool CheckLocationPermissions()
+		{
+			bool permissionsGranted = _permissionGroupLocation.All(x => ContextCompat.CheckSelfPermission(this, x) == Permission.Granted);
 
-	        _mLocationCalback = new LocationCallbackHelper();
-	        _mLocationCalback.CurrentLocation += CurrentLocationCallback;
-        }
+			if (!permissionsGranted)
+			{
+				RequestPermissions(_permissionGroupLocation, RequestLocationId);
+			}
 
-        private bool CheckLocationPermissions()
-        {
-	        bool permissionsGranted = _permissionGroupLocation.All(x => ContextCompat.CheckSelfPermission(this, x) == Permission.Granted);
-
-	        if (!permissionsGranted)
-	        {
-		        RequestPermissions(_permissionGroupLocation, RequestLocationId);
-	        }
-
-	        return permissionsGranted;
-        }
+			return permissionsGranted;
+		}
 
 		#endregion
 
 		#region Trip Configurations
 
-		private void TripLocationsSet()
+		private void StartAutoComplete(int requestCode)
 		{
-			_favouritePlacesButton.Visibility = ViewStates.Invisible;
-			_locationSetButton.Visibility = ViewStates.Visible;
+			List<Place.Field> fields = new List<Place.Field>
+			{
+				Place.Field.Id, Place.Field.Name, Place.Field.LatLng, Place.Field.Address
+			};
+
+			Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.Overlay, fields)
+				.SetCountry("UA")
+				.Build(this);
+
+			StartActivityForResult(intent, requestCode);
+		}
+
+		private async Task TripLocationsSet()
+		{
+			string json = await _mapHelper.GetDirectionJsonAsync(_pickupLocationLatlng, _destinationLatLng);
+
+			if (!string.IsNullOrEmpty(json))
+			{
+				_isTripDrawn = true;
+
+				RunOnUiThread(() =>
+				{
+					_mapHelper.DrawTripOnMap(json);
+
+					double estimatedFare = _mapHelper.GetEstimatedFare();
+					string duration = _mapHelper.GetDuration();
+
+					_rideTypeList.Clear();
+					_rideTypeList.Add(new RideTypeDataModel { Image = Resource.Drawable.taxi_lite, RideType = "Lite", RidePrice = $"₴ {estimatedFare}", RiderDuration = duration });
+					_rideTypeList.Add(new RideTypeDataModel { Image = Resource.Drawable.taxi_standard, RideType = "Standard", RidePrice = $"₴ {estimatedFare + 20}", RiderDuration = duration });
+					_rideTypeList.Add(new RideTypeDataModel { Image = Resource.Drawable.taxi_comfort, RideType = "Comfort", RidePrice = $"₴ {estimatedFare + 40}", RiderDuration = duration });
+					_rideTypeList.Add(new RideTypeDataModel { Image = Resource.Drawable.taxi_minibus, RideType = "Minibus", RidePrice = $"₴ {estimatedFare + 80}", RiderDuration = duration });
+					_rideTypeList.Add(new RideTypeDataModel { Image = Resource.Drawable.taxi_driver, RideType = "Driver", RidePrice = $"₴ {estimatedFare * 3}", RiderDuration = duration });
+
+					_pagerAdapter = new RidePagerAdapter(this, _rideTypeList);
+					_viewPager.Adapter = _pagerAdapter;
+					_viewPager.AddOnPageChangeListener(this);
+
+					_bottomSheetRootBehavior.Hideable = true;
+					_bottomSheetRootBehavior.State = BottomSheetBehavior.StateHidden;
+
+					_tripDetailsBehavior.State = BottomSheetBehavior.StateExpanded;
+					_tripDetailsBehavior.Hideable = false;
+
+					_destinationProgress.Visibility = ViewStates.Gone;
+
+					_googleMap.SetPadding(0, 0, 0, _tripDetailsView.Height + 10);
+				});
+			}
+		}
+
+		private void SetTripUi()
+		{
+			_bottomSheetRootBehavior.State = BottomSheetBehavior.StateExpanded;
+			_bottomSheetRootBehavior.Hideable = false;
+			_myLocation.Visibility = ViewStates.Visible;
 		}
 
 		private void TripDrawnOnMap()
 		{
 			_layoutDestination.Clickable = false;
 			_layoutPickUp.Clickable = false;
+		}
 
-			_pickupRadio.Enabled = false;
-			_destitationRadio.Enabled = false;
-			_takeAddressFromSearch = false;
-			_centerMarker.Visibility = ViewStates.Invisible;
+		public void ReverseTrip()
+		{
+			_bottomSheetRootBehavior.Hideable = false;
+			_bottomSheetRootBehavior.State = BottomSheetBehavior.StateExpanded;
+		}
+
+		private void ResetTrip()
+		{
+			if (!_isTripDrawn)
+			{
+				return;
+			}
+
+			_layoutPickUp.Enabled = true;
+			_layoutDestination.Enabled = true;
+			_pickupProgress.Visibility = ViewStates.Gone;
+			_destinationProgress.Visibility = ViewStates.Gone;
+			_greetings_tv.Text = GetGreetings();
+			_destinationText.Text = "Where to go?";
+
+			_isTripDrawn = false;
+			_googleMap.Clear();
+
+			_tripDetailsBehavior.Hideable = true;
+			_bottomSheetRootBehavior.Hideable = false;
+			_tripDetailsBehavior.State = BottomSheetBehavior.StateHidden;
+			_bottomSheetRootBehavior.State = BottomSheetBehavior.StateExpanded;
+
+			RunOnUiThread(() =>
+			{
+				_googleMap.AnimateCamera(CameraUpdateFactory.NewLatLngZoom(_pickupLocationLatlng, 17.0f));
+				_googleMap.SetPadding(0, 0, 0, _bottomSheetRootView.Height);
+			});
 		}
 
 		#endregion
+
+		private string GetGreetings()
+		{
+			string name = AppDataHelper.GetFirstname();
+			string greeting = null;
+
+			Date date = new Date();
+			Calendar calendar = Calendar.Instance;
+			calendar.Time = date;
+
+			int hour = calendar.Get(CalendarField.HourOfDay);
+
+			if (hour >= 12 && hour <= 18)
+			{
+				greeting = "Good Afternoon";
+			}
+			else if (hour > 18 && hour < 21)
+			{
+				greeting = "Good Evening";
+			}
+			else if (hour >= 21 && hour < 24)
+			{
+				greeting = "Good Night";
+			}
+			else
+			{
+				greeting = $"Good Morning, {name}";
+			}
+
+			return $"{greeting}, {name}";
+		}
+
+		public void OnPageScrollStateChanged(int state)
+		{
+
+		}
+
+		public void OnPageScrolled(int position, float positionOffset, int positionOffsetPixels)
+		{
+
+		}
+
+		public void OnPageSelected(int position)
+		{
+
+		}
 	}
 }
