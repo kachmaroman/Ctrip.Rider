@@ -8,5 +8,6 @@
         public string Phone { get; set; }
         public int Logintype { get; set; }
         public bool IsLinked { get; set; }
+        public string ProfileId { get; set; }
     }
 }

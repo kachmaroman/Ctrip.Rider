@@ -14,6 +14,7 @@ using Refractored.Controls;
 using System;
 using System.Collections.Generic;
 using Ctrip.Rider.Activities;
+using Ctrip.Rider.Constants;
 using Ctrip.Rider.Helpers;
 using Firebase.Database;
 using Xamarin.Facebook;
@@ -80,8 +81,6 @@ namespace Ctrip.Rider.Fragments
 
             _profileRoot = (RelativeLayout)view.FindViewById(Resource.Id.profile_main_root);
 
-            string firstname = AppDataHelper.GetFirstname();
-            string lastname = AppDataHelper.GetLastName();
             string email = AppDataHelper.GetEmail();
             bool isLinked = AppDataHelper.IsProviderLinked();
 
@@ -103,33 +102,31 @@ namespace Ctrip.Rider.Fragments
             _menuBtn = view.FindViewById<TextView>(Resource.Id.edit_menu);
             _menuBtn.Click += MenuBtn_Click;
 
-            int logintype = AppDataHelper.GetLogintype();
+            LoginMethodEnums logintype = (LoginMethodEnums)AppDataHelper.GetLogintype();
 
             switch (logintype)
             {
-                case 0:
-                    Toast.MakeText(Application.Context, "Phone auth", ToastLength.Short).Show();
-                    if (isLinked)
+                case LoginMethodEnums.PhoneAuth:
+	                if (isLinked)
                     {
                         _fbLoginBtn.Visibility = ViewStates.Invisible;
                     }
                     break;
-                case 1:
-                    Toast.MakeText(Application.Context, "facebook auth", ToastLength.Short).Show();
-                    _mainActivity.RunOnUiThread(() => 
+                case LoginMethodEnums.FacebookAuth:
+	                _mainActivity.RunOnUiThread(() => 
                     {
                         _fbLoginBtn.Visibility = ViewStates.Invisible;
                         SetProfilePic(fbId, _profileImg);
                     });
                     break;
-                case 2:
-                    Toast.MakeText(Application.Context, "Google auth", ToastLength.Short).Show();
-                    _fbLoginBtn.Visibility = ViewStates.Invisible;
+                case LoginMethodEnums.GoogleAuth:
+	                _fbLoginBtn.Visibility = ViewStates.Invisible;
                     break;
                 default:
                     Toast.MakeText(Application.Context, "No such data", ToastLength.Short).Show();
                     break;
             }
+
             return view;
         }
 
@@ -173,12 +170,12 @@ namespace Ctrip.Rider.Fragments
             popupMenu.Show();
         }
 
-        private async void SetProfilePic(string providerID, CircleImageView imageView)
+        private async void SetProfilePic(string providerId, CircleImageView imageView)
         {
             try
             {
                 await ImageService.Instance
-                   .LoadUrl($"https://graph.facebook.com/{providerID}/picture?type=normal")
+                   .LoadUrl($"https://graph.facebook.com/{providerId}/picture?type=normal")
                    .LoadingPlaceholder("boy_new.png", FFImageLoading.Work.ImageSource.CompiledResource)
                    .Retry(3, 200)
                    .IntoAsync(imageView);

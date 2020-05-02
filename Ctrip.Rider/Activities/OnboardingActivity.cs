@@ -16,16 +16,23 @@ using Firebase.Auth;
 using Firebase.Database;
 using Refractored.Controls;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using Ctrip.Rider.Constants;
 using Ctrip.Rider.DataModels;
+using Ctrip.Rider.EventListeners;
 using Ctrip.Rider.Helpers;
-using Firebase;
+using Java.Util;
+using Org.Json;
+using static Xamarin.Facebook.GraphRequest;
+using Xamarin.Facebook;
+using Xamarin.Facebook.Login;
 using Result = Android.App.Result;
 
 namespace Ctrip.Rider.Activities
 {
 	[Activity(Label = "OnboardingActivity", Theme = "@style/AppTheme.MainScreen", ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.KeyboardHidden, ScreenOrientation = ScreenOrientation.Portrait)]
-	public class OnboardingActivity : AppCompatActivity, IValueEventListener, IOnFailureListener, IOnSuccessListener
+	public class OnboardingActivity : AppCompatActivity, IFacebookCallback, IValueEventListener, IOnFailureListener, IOnSuccessListener, IGraphJSONObjectCallback
 	{
 		private RelativeLayout _mRelativeLayout;
 		private LinearLayout _mLinearLayout;
@@ -34,29 +41,41 @@ namespace Ctrip.Rider.Activities
 		private FloatingActionButton _mGoogleFab, _mFacebookFab;
 		private CookieBarHelper _helper;
 
+		private bool _usingFirebase;
 		public const int RequestPermission = 200;
 		private CountryPicker.Builder _builder;
 		private CountryPicker _picker;
 		private Country _country;
 		private FirebaseAuth _auth;
+		private FacebookProfileEventListener _profileEventListener;
+
+		private ICallbackManager _callbackManager;
+		private LoginResult _loginResult;
 
 		//shared preference
 		private readonly ISharedPreferences _preferences = Application.Context.GetSharedPreferences("userinfo", FileCreationMode.Private);
 
 		private string _userId;
-		private LoginMethodEnums _loginMethod;
+		private LoginMethodEnums _loginMethod = LoginMethodEnums.PhoneAuth;
 
 		private AlertDialogHelper _dialogHelper;
 
 		protected override void OnCreate(Bundle savedInstanceState)
 		{
 			base.OnCreate(savedInstanceState);
+
+			_profileEventListener = new FacebookProfileEventListener();
+			_profileEventListener.OnProfileChanged += ProfileTracker_OnProfileChanged;
+			_profileEventListener.StartTracking();
+
 			SetContentView(Resource.Layout.onboarding_layout);
 			GetWidgets();
 
 			_helper = new CookieBarHelper(this);
 			_dialogHelper = new AlertDialogHelper(this);
 			_auth = AppDataHelper.GetFirebaseAuth();
+			_callbackManager = CallbackManagerFactory.Create();
+			LoginManager.Instance.RegisterCallback(_callbackManager, this);
 		}
 
 		private void RequestLocationPermissions()
@@ -100,8 +119,8 @@ namespace Ctrip.Rider.Activities
 
 		private void MFacebookFab_Click(object sender, EventArgs e)
 		{
-			//LoginManager.Instance.LogInWithReadPermissions(this, new List<string> { "public_profile", "email" });
-			//LoginMethod = LoginMethodEnums.FacebookAuth;
+			LoginManager.Instance.LogInWithReadPermissions(this, new List<string> { "public_profile", "email" });
+			_loginMethod = LoginMethodEnums.FacebookAuth;
 		}
 
 		private void MGoogleFab_Click(object sender, EventArgs e)
@@ -130,6 +149,7 @@ namespace Ctrip.Rider.Activities
 		protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
 		{
 			base.OnActivityResult(requestCode, resultCode, data);
+			_callbackManager.OnActivityResult(requestCode, (int)resultCode, data);
 		}
 
 		private void GetSharedIntent()
@@ -153,10 +173,30 @@ namespace Ctrip.Rider.Activities
 			_helper.ShowCookieBar("Info", "facebook login canceled");
 		}
 
+		public void OnError(FacebookException error)
+		{
+			_helper.ShowCookieBar("Facebook Error", error.Message);
+		}
+
 		public void OnSuccess(Java.Lang.Object result)
 		{
-			_userId = _auth.CurrentUser.Uid;
-			CheckIfUserExists();
+			if (!_usingFirebase)
+			{
+				_dialogHelper.ShowDialog();
+				_usingFirebase = true;
+				_loginResult = result as LoginResult;
+
+				var credentials = FacebookAuthProvider.GetCredential(_loginResult.AccessToken.Token);
+				_auth.SignInWithCredential(credentials)
+					.AddOnSuccessListener(this, this)
+					.AddOnFailureListener(this, this);
+			}
+			else
+			{
+				_usingFirebase = false;
+				_userId = _auth.CurrentUser.Uid;
+				CheckIfUserExists();
+			}
 		}
 
 		public void OnFailure(Java.Lang.Exception e)
@@ -175,6 +215,7 @@ namespace Ctrip.Rider.Activities
 		{
 			ISharedPreferencesEditor editor = _preferences.Edit();
 
+			editor.PutString("profile_id", userData.ProfileId);
 			editor.PutString("email", userData.Email);
 			editor.PutString("firstname", userData.FirstName);
 			editor.PutString("lastname", userData.LastName);
@@ -201,16 +242,23 @@ namespace Ctrip.Rider.Activities
 
 				UserData userData = new UserData
 				{
-					Email = child?.Child("email").Value.ToString(),
-					Phone = child?.Child("phone").Value.ToString(),
-					FirstName = child?.Child("firstname").Value.ToString(),
-					LastName = child?.Child("lastname").Value.ToString(),
-					Logintype = (int)LoginMethodEnums.PhoneAuth,
-					IsLinked = (bool)child?.Child("isLinkedWithAuth").Value
-
+					Email = child?.Child("email")?.Value?.ToString(),
+					Phone = child?.Child("phone")?.Value?.ToString(),
+					FirstName = child?.Child("firstname")?.Value?.ToString(),
+					LastName = child?.Child("lastname")?.Value?.ToString(),
+					Logintype = (int)_loginMethod,
+					ProfileId = child?.Child("profile_id")?.Value?.ToString(),
+					IsLinked = (bool)child?.Child("isLinkedWithAuth")?.Value
 				};
 
 				SaveToSharedPreference(userData);
+
+				Intent intent = new Intent(this, typeof(MainActivity));
+				intent.SetFlags(ActivityFlags.ClearTop | ActivityFlags.ClearTask | ActivityFlags.NewTask);
+				StartActivity(intent);
+
+				OverridePendingTransition(Resource.Animation.slide_up_anim, Resource.Animation.slide_up_out);
+				Finish();
 			}
 			else
 			{
@@ -218,7 +266,7 @@ namespace Ctrip.Rider.Activities
 					.SetAction("OK", delegate
 					{
 						_auth.SignOut();
-						//LoginManager.Instance.LogOut();
+						LoginManager.Instance.LogOut();
 					})
 					.Show();
 			}
@@ -228,6 +276,48 @@ namespace Ctrip.Rider.Activities
 		{
 			base.OnStart();
 			RequestLocationPermissions();
+		}
+
+		private void ProfileTracker_OnProfileChanged(object sender, OnProfileChangedEventArgs e)
+		{
+			if (e.mProfile != null && _auth?.CurrentUser?.Uid != null)
+			{
+				FirebaseUser user = AppDataHelper.GetCurrentUser();
+
+				HashMap userMap = new HashMap();
+				userMap.Put("profile_id", e.mProfile.Id);
+				userMap.Put("email", user.Email);
+				userMap.Put("phone", user.PhoneNumber);
+				userMap.Put("firstname", e.mProfile.FirstName);
+				userMap.Put("lastname", e.mProfile.LastName);
+				userMap.Put("isLinkedWithAuth", true);
+				userMap.Put("timestamp", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture));
+
+				DatabaseReference userReference = AppDataHelper.GetDatabase().GetReference("users/" + user.Uid);
+				userReference.SetValue(userMap);
+				userReference.KeepSynced(true);
+			}
+		}
+
+		public void OnCompleted(JSONObject @object, GraphResponse response)
+		{
+			try
+			{
+				string fbId = response.JSONObject.GetString("id");
+
+				ISharedPreferencesEditor editor = _preferences.Edit();
+				editor.PutString("profile_id", fbId);
+				editor.Apply();
+
+				var intent = new Intent(this, typeof(MainActivity));
+				intent.SetFlags(ActivityFlags.ClearTask | ActivityFlags.ClearTop | ActivityFlags.NewTask);
+				StartActivity(intent);
+				Finish();
+			}
+			catch (JSONException e)
+			{
+				e.PrintStackTrace();
+			}
 		}
 	}
 }

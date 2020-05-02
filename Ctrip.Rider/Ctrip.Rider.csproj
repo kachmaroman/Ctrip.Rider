@@ -83,6 +83,7 @@
     <Compile Include="Dtos\UserLoginDto.cs" />
     <Compile Include="Dtos\UserRegisterDto.cs" />
     <Compile Include="EventListeners\CreateRequestEventListener.cs" />
+    <Compile Include="EventListeners\FacebookProfileEventListener.cs" />
     <Compile Include="EventListeners\RecentHistoryListener.cs" />
     <Compile Include="EventListeners\TaskCompletionListener.cs" />
     <Compile Include="EventListeners\UserProfileEventListener.cs" />

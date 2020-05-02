@@ -137,10 +137,6 @@ namespace Ctrip.Rider.Activities
 
 			PhoneAuthCredential credentials = PhoneAuthProvider.GetCredential(verificationId, otpCode);
 			InitializeCredentials(credentials);
-
-			//Intent intent = new Intent(this, typeof(MainActivity));
-			//intent.SetFlags(ActivityFlags.ClearTask | ActivityFlags.ClearTop | ActivityFlags.NewTask);
-			//StartActivity(intent);
 		}
 
 		private void InitializeCredentials(PhoneAuthCredential credentials)
@@ -188,26 +184,26 @@ namespace Ctrip.Rider.Activities
 				DataSnapshot child = snapshot.Child(_userId);
 
 				UserData userData = new UserData
-					{
-						Email = child?.Child("email").Value.ToString(),
-						Phone = child?.Child("phone").Value.ToString(),
-						FirstName = child?.Child("firstname").Value.ToString(),
-						LastName = child?.Child("lastname").Value.ToString(),
-						Logintype = (int)LoginMethodEnums.PhoneAuth,
-						IsLinked = (bool)child?.Child("isLinkedWithAuth").Value
-					};
+				{
+					Email = child?.Child("email").Value.ToString(),
+					Phone = child?.Child("phone").Value.ToString(),
+					FirstName = child?.Child("firstname").Value.ToString(),
+					LastName = child?.Child("lastname").Value.ToString(),
+					Logintype = (int)LoginMethodEnums.PhoneAuth,
+					IsLinked = (bool)child?.Child("isLinkedWithAuth").Value
+				};
 
-					verificationId = string.Empty;
+				verificationId = string.Empty;
 
-					SaveToSharedPreference(userData);
+				SaveToSharedPreference(userData);
 
-					CloseProgressDialog();
+				CloseProgressDialog();
 
-					Intent intent = new Intent(this, typeof(MainActivity));
-					intent.SetFlags(ActivityFlags.ClearTask | ActivityFlags.ClearTop | ActivityFlags.NewTask);
-					StartActivity(intent);
+				Intent intent = new Intent(this, typeof(MainActivity));
+				intent.SetFlags(ActivityFlags.ClearTask | ActivityFlags.ClearTop | ActivityFlags.NewTask);
+				StartActivity(intent);
 
-					Finish();
+				Finish();
 			}
 			else
 			{
