@@ -9,10 +9,8 @@ using Android.Content.PM;
 using Android.Gms.Location;
 using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
-using Android.Graphics;
 using Android.OS;
 using Android.Support.V7.App;
-using Android.Runtime;
 using Android.Support.Design.Widget;
 using Android.Support.V4.Content;
 using Android.Support.V4.View;
@@ -24,10 +22,13 @@ using Ctrip.Rider.DataModels;
 using Ctrip.Rider.EventListeners;
 using Ctrip.Rider.Fragments;
 using Ctrip.Rider.Helpers;
+using FFImageLoading;
 using Google.Places;
 using Java.Util;
+using Refractored.Controls;
 using ActionBar = Android.Support.V7.App.ActionBar;
 using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
+using static Android.Support.Design.Widget.NavigationView;
 using Location = Android.Locations.Location;
 using Toolbar = Android.Support.V7.Widget.Toolbar;
 using static Android.Support.V4.View.ViewPager;
@@ -36,7 +37,7 @@ using Result = Android.App.Result;
 namespace Ctrip.Rider
 {
 	[Activity(Label = "@string/app_name", Theme = "@style/CtripTheme", MainLauncher = false)]
-	public class MainActivity : AppCompatActivity, IOnMapReadyCallback, IOnPageChangeListener
+	public class MainActivity : AppCompatActivity, IOnMapReadyCallback, IOnPageChangeListener, IOnNavigationItemSelectedListener
 	{
 		private readonly UserProfileEventListener _profileEventListener = new UserProfileEventListener();
 
@@ -45,6 +46,7 @@ namespace Ctrip.Rider
 		//Views
 		private Toolbar _mainToolbar;
 		private DrawerLayout _drawerLayout;
+		private NavigationView _navView;
 
 		//TextViews
 		private TextView _accountTitleText;
@@ -53,6 +55,7 @@ namespace Ctrip.Rider
 		private TextView _pickupText;
 		private TextView _destinationText;
 		private TextView _greetings_tv;
+		private TextView _drawerTextUsername;
 
 		//Progresses
 		private ProgressBar _pickupProgress;
@@ -161,6 +164,24 @@ namespace Ctrip.Rider
 			}
 
 			_greetings_tv.Text = GetGreetings();
+
+			_navView = FindViewById<NavigationView>(Resource.Id.navView);
+			_navView.ItemIconTintList = null;
+
+			View headerView = _navView.GetHeaderView(0);
+			headerView.Click += HeaderView_Click;
+
+			_drawerTextUsername = headerView.FindViewById<TextView>(Resource.Id.accountTitle);
+			_drawerTextUsername.Text = AppDataHelper.GetFullName();
+
+			CircleImageView accountImage = headerView.FindViewById<CircleImageView>(Resource.Id.accountImage);
+
+			RunOnUiThread(() =>
+			{
+				SetProfilePic(AppDataHelper.GetFbProfilePic(), accountImage);
+			});
+
+			SetUpDrawerContent(_navView);
 		}
 
 		#region Overrides
@@ -170,10 +191,11 @@ namespace Ctrip.Rider
 			base.OnCreate(savedInstanceState);
 			Xamarin.Essentials.Platform.Init(this, savedInstanceState);
 
-			SetContentView(Resource.Layout.activity_main);
-			ConnectControls();
-
 			Instance = this;
+
+			SetContentView(Resource.Layout.activity_main);
+
+			ConnectControls();
 
 			SupportMapFragment mapFragment = (SupportMapFragment)SupportFragmentManager.FindFragmentById(Resource.Id.map);
 			mapFragment.GetMapAsync(this);
@@ -269,10 +291,48 @@ namespace Ctrip.Rider
 				}
 			}
 		}
+		public void OnPageScrollStateChanged(int state)
+		{ }
+
+		public void OnPageScrolled(int position, float positionOffset, int positionOffsetPixels)
+		{ }
+
+		public void OnPageSelected(int position)
+		{ }
+
+		public bool OnNavigationItemSelected(IMenuItem menuItem)
+		{
+			SelectDrawerItem(menuItem.ItemId);
+			return true;
+		}
+
+		private void SetUpDrawerContent(NavigationView navView)
+		{
+			navView.SetNavigationItemSelectedListener(this);
+		}
 
 		#endregion
 
 		#region Click Event Handlesrs
+
+		private void HeaderView_Click(object sender, EventArgs e)
+		{
+			if (!_drawerLayout.IsDrawerOpen((int) GravityFlags.Start))
+			{
+				return;
+			}
+
+			Android.Support.V4.App.Fragment profileFragment = new ProfileFragment();
+
+			SupportFragmentManager
+				.BeginTransaction()
+				.SetCustomAnimations(Resource.Animation.slide_up_anim, Resource.Animation.slide_up_out)
+				.Replace(Resource.Id.content_frame, profileFragment, profileFragment.Class.SimpleName)
+				.AddToBackStack(null)
+				.Commit();
+
+			_drawerLayout.CloseDrawer((int)GravityFlags.Start);
+		}
 
 		private async void MyLocation_Click(object sender, EventArgs e)
 		{
@@ -483,12 +543,6 @@ namespace Ctrip.Rider
 			_myLocation.Visibility = ViewStates.Visible;
 		}
 
-		private void TripDrawnOnMap()
-		{
-			_layoutDestination.Clickable = false;
-			_layoutPickUp.Clickable = false;
-		}
-
 		public void ReverseTrip()
 		{
 			_bottomSheetRootBehavior.Hideable = false;
@@ -557,19 +611,55 @@ namespace Ctrip.Rider
 			return $"{greeting}, {name}";
 		}
 
-		public void OnPageScrollStateChanged(int state)
+		private void SelectDrawerItem(int itemId)
 		{
+			Android.Support.V4.App.Fragment fragment = null;
 
+			switch (itemId)
+			{
+				case Resource.Id.action_free_rides:
+					break;
+				case Resource.Id.action_payments:
+					fragment = new PaymentsFragment();
+					break;
+				case Resource.Id.action_history:
+					fragment = new PlacesHistory();
+					break;
+				case Resource.Id.action_promos:
+					break;
+				case Resource.Id.action_support:
+					break;
+				case Resource.Id.action_about:
+					break;
+			}
+
+			if (fragment != null)
+			{
+				SupportFragmentManager
+					.BeginTransaction()
+					.SetCustomAnimations(Resource.Animation.slide_up_anim, Resource.Animation.slide_up_out)
+					.Replace(Resource.Id.content_frame, fragment)
+					.AddToBackStack(null)
+					.Commit();
+			}
+
+			_drawerLayout.CloseDrawer(GravityCompat.Start);
 		}
 
-		public void OnPageScrolled(int position, float positionOffset, int positionOffsetPixels)
+		private async void SetProfilePic(string providerId, CircleImageView accountImage)
 		{
-
-		}
-
-		public void OnPageSelected(int position)
-		{
-
+			try
+			{
+				await ImageService.Instance
+					.LoadUrl($"https://graph.facebook.com/{providerId}/picture?type=normal")
+					.LoadingPlaceholder("boy_new", FFImageLoading.Work.ImageSource.CompiledResource)
+					.Retry(3, 200)
+					.IntoAsync(accountImage);
+			}
+			catch
+			{
+				// ignored
+			}
 		}
 	}
 }

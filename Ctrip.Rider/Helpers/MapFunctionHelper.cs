@@ -137,12 +137,12 @@ namespace Ctrip.Rider.Helpers
 
             MarkerOptions pickupMarkerOptions = new MarkerOptions();
             pickupMarkerOptions.SetPosition(firstpoint);
-            pickupMarkerOptions.SetTitle("Pickup");
+            //pickupMarkerOptions.SetTitle("Pickup");
             pickupMarkerOptions.SetIcon(BitmapDescriptorFactory.DefaultMarker(BitmapDescriptorFactory.HueGreen));
 
             MarkerOptions destinationMarkerOptions = new MarkerOptions();
             destinationMarkerOptions.SetPosition(lastpoint);
-            destinationMarkerOptions.SetTitle("Destination");
+            //destinationMarkerOptions.SetTitle("Destination");
             destinationMarkerOptions.SetIcon(BitmapDescriptorFactory.DefaultMarker(BitmapDescriptorFactory.HueRed));
 
             MarkerOptions driverMarkerOptions = new MarkerOptions();

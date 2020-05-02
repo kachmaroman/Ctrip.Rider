@@ -89,5 +89,20 @@ namespace Ctrip.Rider.Helpers
 		{
 			return Preferences.GetString("int_format", string.Empty);
 		}
+
+		public static string GetFbProfilePic()
+		{
+			return Preferences.GetString("profile_id", string.Empty);
+		}
+
+		public static bool IsProviderLinked()
+		{
+			return Preferences.GetBoolean("isLinked", false);
+		}
+
+		public static int GetLogintype()
+		{
+			return Preferences.GetInt("logintype", 0);
+		}
 	}
 }

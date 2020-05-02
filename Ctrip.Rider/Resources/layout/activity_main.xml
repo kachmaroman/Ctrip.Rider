@@ -8,24 +8,25 @@
     android:id="@+id/drawerLayout"
     android:fitsSystemWindows="true">
 
-    <LinearLayout
+    <FrameLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/content_frame">
 
         <include
             layout="@layout/include_main"/>
 
-    </LinearLayout>
+    </FrameLayout>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/navView"
         android:layout_width="300dp"
         android:layout_height="match_parent"
-        android:background="@color/ctripwhite"
         android:layout_gravity="start"
         app:headerLayout="@layout/headerLayout"
         app:menu="@menu/navmenu"
-        app:theme="@style/NavigationStyle"/>
+        app:theme="@style/NavigationStyle"
+        app:itemTextAppearance="?android:attr/textAppearanceLarge"/>
 
 </android.support.v4.widget.DrawerLayout>
