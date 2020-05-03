@@ -42,6 +42,7 @@
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
     <BundleAssemblies>false</BundleAssemblies>
     <AndroidEnableMultiDex>true</AndroidEnableMultiDex>
+    <AndroidSupportedAbis />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -77,6 +78,8 @@
     <Compile Include="Adapters\HistoryAdapter.cs" />
     <Compile Include="Adapters\RidePagerAdapter.cs" />
     <Compile Include="Constants\Enums.cs" />
+    <Compile Include="DataModels\AcceptedDriver.cs" />
+    <Compile Include="DataModels\AvailableDriver.cs" />
     <Compile Include="DataModels\NewTripDetails.cs" />
     <Compile Include="DataModels\Person.cs" />
     <Compile Include="DataModels\RideTypeDataModel.cs" />
@@ -84,6 +87,7 @@
     <Compile Include="Dtos\UserRegisterDto.cs" />
     <Compile Include="EventListeners\CreateRequestEventListener.cs" />
     <Compile Include="EventListeners\FacebookProfileEventListener.cs" />
+    <Compile Include="EventListeners\FindDriverListener.cs" />
     <Compile Include="EventListeners\RecentHistoryListener.cs" />
     <Compile Include="EventListeners\TaskCompletionListener.cs" />
     <Compile Include="EventListeners\UserProfileEventListener.cs" />
@@ -115,6 +119,7 @@
     <None Include="Resources\AboutResources.txt" />
     <None Include="Properties\AndroidManifest.xml" />
     <None Include="Assets\AboutAssets.txt" />
+    <AndroidResource Include="Resources\Raw\silvermapstyle.json" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\activity_main.xml">
@@ -576,6 +581,21 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\ic_home.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\rideinfo.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_call_black_48dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_clear_black_48dp.png" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <AndroidResource Include="Resources\Raw\alert.mp3" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

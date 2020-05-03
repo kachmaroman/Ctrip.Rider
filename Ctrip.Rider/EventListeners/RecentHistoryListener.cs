@@ -57,7 +57,7 @@ namespace Ctrip.Rider.EventListeners
 
         public void Create()
         {
-            AppDataHelper.GetDatabase().GetReference("users").Child(AppDataHelper.GetCurrentUser().Uid).Child("Ride_requests").AddValueEventListener(this);
+            AppDataHelper.GetDatabase().GetReference("Ride_requests").AddValueEventListener(this);
         }
     }
 }

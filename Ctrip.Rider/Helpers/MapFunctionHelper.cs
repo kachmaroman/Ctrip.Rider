@@ -10,9 +10,6 @@ using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
 using Android.Graphics;
 using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 using Com.Google.Maps.Android;
 using Java.Util;
 using Newtonsoft.Json;
@@ -196,49 +193,47 @@ namespace Ctrip.Rider.Helpers
             return durationString;
         }
 
-        //public async void UpdateDriverLocationToPickUp(LatLng firstposition, LatLng secondposition)
-        //{
-        //    if (!isRequestingDirection)
-        //    {
-        //        isRequestingDirection = true;
-        //        string json = await GetDirectionJsonAsync(firstposition, secondposition);
-        //        var directionData = JsonConvert.DeserializeObject<DirectionParser>(json);
-        //        string duration = directionData.routes[0].legs[0].duration.text;
-        //        pickupMarker.Title = "Pickup Location";
-        //        pickupMarker.Snippet = "Your Driver is " + duration + " Away";
-        //        pickupMarker.ShowInfoWindow();
-        //        isRequestingDirection = false;
-        //    }
+        public async void UpdateDriverLocationToPickUp(LatLng firstposition, LatLng secondposition)
+        {
+            if (!isRequestingDirection)
+            {
+                isRequestingDirection = true;
+                string json = await GetDirectionJsonAsync(firstposition, secondposition);
+                var directionData = JsonConvert.DeserializeObject<DirectionParser>(json);
+                string duration = directionData.routes[0].legs[0].duration.text;
+                pickupMarker.Title = "Pickup Location";
+                pickupMarker.Snippet = "Your Driver is " + duration + " Away";
+                pickupMarker.ShowInfoWindow();
+                isRequestingDirection = false;
+            }
+        }
 
+        public void UpdateDriverArrived()
+        {
+            pickupMarker.Title = "Pickup Location";
+            pickupMarker.Snippet = "Your Driver has Arrived";
+            pickupMarker.ShowInfoWindow();
+        }
 
-        //}
+        public async void UpdateLocationToDestination(LatLng firstposition, LatLng secondposition)
+        {
+            driverLocationMarker.Visible = true;
+            driverLocationMarker.Position = firstposition;
+            map.AnimateCamera(CameraUpdateFactory.NewLatLngZoom(firstposition, 15));
 
-        //public void UpdateDriverArrived()
-        //{
-        //    pickupMarker.Title = "Pickup Location";
-        //    pickupMarker.Snippet = "Your Driver has Arrived";
-        //    pickupMarker.ShowInfoWindow();
-        //}
+            if (!isRequestingDirection)
+            {
+                //Check Connection
+                isRequestingDirection = true;
+                string json = await GetDirectionJsonAsync(firstposition, secondposition);
+                var directionData = JsonConvert.DeserializeObject<DirectionParser>(json);
+                string duration = directionData.routes[0].legs[0].duration.text;
+                driverLocationMarker.Title = "Current Location";
+                driverLocationMarker.Snippet = "Your Destination is " + duration + " Away";
+                driverLocationMarker.ShowInfoWindow();
+                isRequestingDirection = false;
+            }
 
-        //public async void UpdateLocationToDestination(LatLng firstposition, LatLng secondposition)
-        //{
-        //    driverLocationMarker.Visible = true;
-        //    driverLocationMarker.Position = firstposition;
-        //    map.AnimateCamera(CameraUpdateFactory.NewLatLngZoom(firstposition, 15));
-
-        //    if (!isRequestingDirection)
-        //    {
-        //        //Check Connection
-        //        isRequestingDirection = true;
-        //        string json = await GetDirectionJsonAsync(firstposition, secondposition);
-        //        var directionData = JsonConvert.DeserializeObject<DirectionParser>(json);
-        //        string duration = directionData.routes[0].legs[0].duration.text;
-        //        driverLocationMarker.Title = "Current Location";
-        //        driverLocationMarker.Snippet = "Your Destination is " + duration + " Away";
-        //        driverLocationMarker.ShowInfoWindow();
-        //        isRequestingDirection = false;
-        //    }
-
-        //}
+        }
     }
 }

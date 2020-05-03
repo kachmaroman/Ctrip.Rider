@@ -9,6 +9,7 @@ using Android.Content.PM;
 using Android.Gms.Location;
 using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
+using Android.Media;
 using Android.OS;
 using Android.Support.V7.App;
 using Android.Support.Design.Widget;
@@ -42,6 +43,7 @@ namespace Ctrip.Rider
 		private readonly UserProfileEventListener _profileEventListener = new UserProfileEventListener();
 
 		public CreateRequestEventListener RequestEventListener { get; set; }
+		private FindDriverListener _findDriverListener;
 
 		//Views
 		private Toolbar _mainToolbar;
@@ -54,8 +56,10 @@ namespace Ctrip.Rider
 		private TextView _toLocationText;
 		private TextView _pickupText;
 		private TextView _destinationText;
-		private TextView _greetings_tv;
+		private TextView _greetingsTv;
 		private TextView _drawerTextUsername;
+		private TextView _driverNameText;
+		private TextView _tripStatusText;
 
 		//Progresses
 		private ProgressBar _pickupProgress;
@@ -91,10 +95,8 @@ namespace Ctrip.Rider
 		private static readonly int Displacement = 3; //meters
 		private static readonly float Zoom = 16.0f;
 
-		//Helpers
 		MapFunctionHelper _mapHelper;
 
-		//TripDetails
 		private LatLng _pickupLocationLatlng;
 		private LatLng _destinationLatLng;
 		private string _pickupAddress;
@@ -103,14 +105,11 @@ namespace Ctrip.Rider
 		private PagerAdapter _pagerAdapter;
 		private List<RideTypeDataModel> _rideTypeList;
 
-		//Flags
-		//private bool _takeAddressFromSearch = false;
 		private bool _isTripDrawn = false;
 
-		//DataModels
 		private NewTripDetails _newTripDetails;
+		FindingDriverDialog _requestDriverFragment;
 
-		//Constants
 		private const int RequestCodePickup = 1;
 		private const int RequestCodeDestination = 2;
 
@@ -133,7 +132,7 @@ namespace Ctrip.Rider
 			_toLocationText = FindViewById<TextView>(Resource.Id.to_tv);
 			_pickupText = FindViewById<TextView>(Resource.Id.pickupText);
 			_destinationText = FindViewById<TextView>(Resource.Id.destinationText);
-			_greetings_tv = FindViewById<TextView>(Resource.Id.greetings_tv);
+			_greetingsTv = FindViewById<TextView>(Resource.Id.greetings_tv);
 			_layoutPickUp = FindViewById<RelativeLayout>(Resource.Id.layoutPickup);
 			_layoutDestination = FindViewById<RelativeLayout>(Resource.Id.layoutDestination);
 			_layoutPickUp.Click += (sender, e) => StartAutoComplete(RequestCodePickup);
@@ -163,7 +162,7 @@ namespace Ctrip.Rider
 				_tripDetailsBehavior.State = BottomSheetBehavior.StateHidden;
 			}
 
-			_greetings_tv.Text = GetGreetings();
+			_greetingsTv.Text = GetGreetings();
 
 			_navView = FindViewById<NavigationView>(Resource.Id.navView);
 			_navView.ItemIconTintList = null;
@@ -173,6 +172,9 @@ namespace Ctrip.Rider
 
 			_drawerTextUsername = headerView.FindViewById<TextView>(Resource.Id.accountTitle);
 			_drawerTextUsername.Text = AppDataHelper.GetFullName();
+
+			_tripStatusText = FindViewById<TextView>(Resource.Id.tripStatusText);
+		    _driverNameText = FindViewById<TextView>(Resource.Id.driverNameText);
 
 			CircleImageView accountImage = headerView.FindViewById<CircleImageView>(Resource.Id.accountImage);
 
@@ -260,6 +262,7 @@ namespace Ctrip.Rider
 
 					Place place = Autocomplete.GetPlaceFromIntent(data);
 					_destinationText.Text = place.Name;
+					_toLocationText.Text = place.Name;
 					_destinationLatLng = place.LatLng;
 					_destinationAddress = place.Name;
 					_layoutDestination.Enabled = false;
@@ -353,7 +356,7 @@ namespace Ctrip.Rider
 			_tripDetailsBehavior.State = BottomSheetBehavior.StateHidden;
 			_bottomSheetRootBehavior.State = BottomSheetBehavior.StateHidden;
 
-			FindingDriverDialog.Display(SupportFragmentManager, false, _pickupAddress, _destinationAddress, _mapHelper.durationString, _mapHelper.GetEstimatedFare());
+			_requestDriverFragment = FindingDriverDialog.Display(SupportFragmentManager, false, _pickupAddress, _destinationAddress, _mapHelper.durationString, _mapHelper.GetEstimatedFare());
 
 			_newTripDetails = new NewTripDetails
 			{
@@ -373,7 +376,108 @@ namespace Ctrip.Rider
 			};
 
 			RequestEventListener = new CreateRequestEventListener(_newTripDetails);
+			RequestEventListener.NoDriverAcceptedRequest += RequestListener_NoDriverAcceptedRequest;
+			RequestEventListener.DriverAccepted += RequestListener_DriverAccepted;
+			RequestEventListener.TripUpdates += RequestListener_TripUpdates;
 			await RequestEventListener.CreateRequestAsync();
+
+			_findDriverListener = new FindDriverListener(_pickupLocationLatlng, _newTripDetails.RideId);
+			_findDriverListener.DriversFound += FindDriverListener_DriversFound;
+			_findDriverListener.DriverNotFound += FindDriverListener_DriverNotFound;
+			_findDriverListener.Create();
+		}
+
+		private void RequestListener_NoDriverAcceptedRequest(object sender, EventArgs e)
+		{
+			RunOnUiThread(() =>
+			{
+				if (_requestDriverFragment != null && RequestEventListener != null)
+				{
+					RequestEventListener.CancelRequestOnTimeout();
+					RequestEventListener = null;
+					_requestDriverFragment.Dismiss();
+					_requestDriverFragment = null;
+
+					Android.Support.V7.App.AlertDialog.Builder alert = new Android.Support.V7.App.AlertDialog.Builder(this);
+					alert.SetTitle("Message");
+					alert.SetMessage("Available Drivers Couldn't Accept Your Ride Request, Try again in a few mnoment");
+					alert.Show();
+				}
+			});
+		}
+
+		private void RequestListener_DriverAccepted(object sender, CreateRequestEventListener.DriverAcceptedEventArgs e)
+		{
+			if (_requestDriverFragment != null)
+			{
+				_requestDriverFragment.Dismiss();
+				_requestDriverFragment = null;
+			}
+
+			_driverNameText.Text = e.acceptedDriver.Fullname;
+			_tripStatusText.Text = "Coming";
+
+			//tripDetailsBottonsheetBehavior.State = BottomSheetBehavior.StateHidden;
+			//driverAssignedBottomSheetBehavior.State = BottomSheetBehavior.StateExpanded;
+		}
+
+		private async void RequestListener_TripUpdates(object sender, CreateRequestEventListener.TripUpdatesEventArgs e)
+		{
+			if (e.Status == "accepted")
+			{
+				_tripStatusText.Text = "Coming";
+				_mapHelper.UpdateDriverLocationToPickUp(_pickupLocationLatlng, e.DriverLocation);
+			}
+			else if (e.Status == "arrived")
+			{
+				_tripStatusText.Text = "Driver Arrived";
+				_mapHelper.UpdateDriverArrived();
+				MediaPlayer player = MediaPlayer.Create(this, Resource.Raw.alert);
+				player.Start();
+			}
+			else if (e.Status == "ontrip")
+			{
+				_tripStatusText.Text = "On Trip";
+				_mapHelper.UpdateLocationToDestination(e.DriverLocation, _destinationLatLng);
+			}
+			else if (e.Status == "ended")
+			{
+				RequestEventListener.EndTrip();
+				RequestEventListener = null;
+			 	await TripLocationUnset();
+
+				//driverAssignedBottomSheetBehavior.State = BottomSheetBehavior.StateHidden;
+
+				//MakePaymentFragment makePaymentFragment = new MakePaymentFragment(e.Fares);
+				//makePaymentFragment.Cancelable = false;
+				//var trans = SupportFragmentManager.BeginTransaction();
+				//makePaymentFragment.Show(trans, "payment");
+				//makePaymentFragment.PaymentCompleted += (i, p) =>
+				//{
+				//	makePaymentFragment.Dismiss();
+				//};
+			}
+		}
+
+		private void FindDriverListener_DriversFound(object sender, FindDriverListener.DriverFoundEventArgs e)
+		{
+			RequestEventListener?.NotifyDriver(e.Drivers);
+		}
+
+		private async void FindDriverListener_DriverNotFound(object sender, EventArgs e)
+		{
+			if (_requestDriverFragment != null && RequestEventListener != null)
+			{
+				await RequestEventListener.CancelRequestAsync();
+				RequestEventListener = null;
+				_requestDriverFragment.Dismiss();
+				_requestDriverFragment = null;
+
+				Android.Support.V7.App.AlertDialog.Builder alert = new Android.Support.V7.App.AlertDialog.Builder(this);
+				alert.SetTitle("Message");
+				alert.SetMessage("No available driver found, try again in a few moments");
+				alert.Show();
+			}
 		}
 
 		#endregion
@@ -560,7 +664,7 @@ namespace Ctrip.Rider
 			_layoutDestination.Enabled = true;
 			_pickupProgress.Visibility = ViewStates.Gone;
 			_destinationProgress.Visibility = ViewStates.Gone;
-			_greetings_tv.Text = GetGreetings();
+			_greetingsTv.Text = GetGreetings();
 			_destinationText.Text = "Where to go?";
 
 			_isTripDrawn = false;
@@ -576,6 +680,14 @@ namespace Ctrip.Rider
 				_googleMap.AnimateCamera(CameraUpdateFactory.NewLatLngZoom(_pickupLocationLatlng, 17.0f));
 				_googleMap.SetPadding(0, 0, 0, _bottomSheetRootView.Height);
 			});
+		}
+
+		private async Task TripLocationUnset()
+		{
+			_googleMap.Clear(); ;
+
+			//tripDetailsBottonsheetBehavior.State = BottomSheetBehavior.StateHidden;
+			await GetCurrentLocationAsync();
 		}
 
 		#endregion
