@@ -191,7 +191,7 @@ namespace Ctrip.Rider.EventListeners
         {
             _timerCounter++;
 
-            if (_timerCounter == 10)
+            if (_timerCounter == 100)
             {
                 if (!_isDriverAccepted)
                 {

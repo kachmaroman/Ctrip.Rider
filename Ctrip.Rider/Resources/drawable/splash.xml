@@ -6,11 +6,12 @@
 	</item>
 
 	<item>
-		<bitmap android:src="@drawable/cover"
+		<bitmap 
+				android:src="@drawable/cover"
 				android:scaleType="matrix"
 				android:layout_height="fill_parent"
 				android:layout_width="fill_parent"
-				android:tileMode="disabled"
-        />
+				android:tileMode="disabled"/>
+
 	</item>
 </layer-list>

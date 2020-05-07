@@ -69,11 +69,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activities\GetStartedActivity.cs" />
-    <Compile Include="Activities\LoginActivity.cs" />
     <Compile Include="Activities\OnboardingActivity.cs" />
     <Compile Include="Activities\PhoneValidationActivity.cs" />
     <Compile Include="Activities\ProfileActivity.cs" />
-    <Compile Include="Activities\RegistrationActivity.cs" />
     <Compile Include="Activities\SplashActivity.cs" />
     <Compile Include="Adapters\HistoryAdapter.cs" />
     <Compile Include="Adapters\RidePagerAdapter.cs" />
@@ -83,8 +81,6 @@
     <Compile Include="DataModels\NewTripDetails.cs" />
     <Compile Include="DataModels\Person.cs" />
     <Compile Include="DataModels\RideTypeDataModel.cs" />
-    <Compile Include="Dtos\UserLoginDto.cs" />
-    <Compile Include="Dtos\UserRegisterDto.cs" />
     <Compile Include="EventListeners\CreateRequestEventListener.cs" />
     <Compile Include="EventListeners\FacebookProfileEventListener.cs" />
     <Compile Include="EventListeners\FindDriverListener.cs" />
@@ -103,12 +99,12 @@
     <Compile Include="Helpers\DirectionParser.cs" />
     <Compile Include="Helpers\FirebaseBuilder.cs" />
     <Compile Include="Helpers\GeocodingParser.cs" />
+    <Compile Include="Helpers\InfoWindowHelper.cs" />
     <Compile Include="Helpers\KeyboardHelper.cs" />
     <Compile Include="Helpers\LocationCallbackHelper.cs" />
     <Compile Include="Helpers\MapFunctionHelper.cs" />
     <Compile Include="Helpers\PhoneVerificationCallback.cs" />
     <Compile Include="Helpers\RecyclerItemDecor.cs" />
-    <Compile Include="Helpers\Validator.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -226,16 +222,6 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\ctriproundbutton.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\layout\register.xml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\layout\login.xml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\include_main.xml">
@@ -583,19 +569,21 @@
     <AndroidResource Include="Resources\drawable\ic_home.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\rideinfo.xml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
-  </ItemGroup>
-  <ItemGroup>
     <AndroidResource Include="Resources\drawable\ic_call_black_48dp.png" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\ic_clear_black_48dp.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\info_window_layout.xml" />
+  </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\Raw\alert.mp3" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\rideInfo.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

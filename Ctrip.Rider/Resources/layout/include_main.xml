@@ -68,7 +68,10 @@
         layout="@layout/main_bottomsheet"/>
 
     <include
-	    layout="@layout/trip_details_bottomsheet"/>
+        layout="@layout/trip_details_bottomsheet"/>
+
+    <include
+        layout="@layout/rideInfo"/>
 
 
 </android.support.design.widget.CoordinatorLayout>

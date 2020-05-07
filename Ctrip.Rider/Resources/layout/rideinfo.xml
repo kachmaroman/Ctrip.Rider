@@ -38,7 +38,7 @@
 
                 <TextView
                     android:id="@+id/driverNameText"
-                    android:text="Ufinix Academy"
+                    android:text="Driver"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:layout_height="wrap_content"
@@ -83,13 +83,11 @@
                     android:src="@drawable/ic_clear_black_48dp"
                     android:scaleType="centerCrop" />
 
-
             </RelativeLayout>
 
         </LinearLayout>
 
-
-        <RelativeLayout
+	    <RelativeLayout
             android:layout_height="0dp"
             android:layout_weight="0.5"
             android:layout_width="match_parent">
@@ -114,8 +112,7 @@
                 android:elevation="2dp"
                 android:textColor="@color/ctripwhite"
                 android:background="@drawable/ctriproundbutton"
-                android:layout_alignParentBottom="true"
-            />
+                android:layout_alignParentBottom="true"/>
 
         </RelativeLayout>
 

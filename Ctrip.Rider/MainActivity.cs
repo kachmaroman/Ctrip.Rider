@@ -70,10 +70,12 @@ namespace Ctrip.Rider
 		private RelativeLayout _tripDetailsView;
 		private RelativeLayout _layoutPickUp;
 		private RelativeLayout _layoutDestination;
+		private FrameLayout _rideInfoView;
 
 		//Bottom-sheets
 		private BottomSheetBehavior _bottomSheetRootBehavior;
 		private BottomSheetBehavior _tripDetailsBehavior;
+		private BottomSheetBehavior _driverAssignedBehavior;
 
 		//Buttons
 		private FloatingActionButton _myLocation;
@@ -135,6 +137,7 @@ namespace Ctrip.Rider
 			_greetingsTv = FindViewById<TextView>(Resource.Id.greetings_tv);
 			_layoutPickUp = FindViewById<RelativeLayout>(Resource.Id.layoutPickup);
 			_layoutDestination = FindViewById<RelativeLayout>(Resource.Id.layoutDestination);
+
 			_layoutPickUp.Click += (sender, e) => StartAutoComplete(RequestCodePickup);
 			_layoutDestination.Click += (sender, e) => StartAutoComplete(RequestCodeDestination);
 
@@ -151,8 +154,11 @@ namespace Ctrip.Rider
 
 			_bottomSheetRootView = FindViewById<RelativeLayout>(Resource.Id.main_sheet_root);
 			_tripDetailsView = FindViewById<RelativeLayout>(Resource.Id.trip_root);
+			_rideInfoView = FindViewById<FrameLayout>(Resource.Id.bottom_sheet_trip);
+
 			_bottomSheetRootBehavior = BottomSheetBehavior.From(_bottomSheetRootView);
 			_tripDetailsBehavior = BottomSheetBehavior.From(_tripDetailsView);
+			_driverAssignedBehavior = BottomSheetBehavior.From(_rideInfoView);
 
 			_bottomSheetRootBehavior.PeekHeight = BottomSheetBehavior.PeekHeightAuto;
 			_bottomSheetRootBehavior.State = BottomSheetBehavior.StateHidden;
@@ -417,8 +423,8 @@ namespace Ctrip.Rider
 			_driverNameText.Text = e.acceptedDriver.Fullname;
 			_tripStatusText.Text = "Coming";
 
-			//tripDetailsBottonsheetBehavior.State = BottomSheetBehavior.StateHidden;
-			//driverAssignedBottomSheetBehavior.State = BottomSheetBehavior.StateExpanded;
+			_tripDetailsBehavior.State = BottomSheetBehavior.StateHidden;
+			_driverAssignedBehavior.State = BottomSheetBehavior.StateExpanded;
 		}
 
 		private async void RequestListener_TripUpdates(object sender, CreateRequestEventListener.TripUpdatesEventArgs e)
@@ -492,6 +498,9 @@ namespace Ctrip.Rider
 			_googleMap.UiSettings.CompassEnabled = false;
 			_googleMap.UiSettings.RotateGesturesEnabled = false;
 			_googleMap.UiSettings.MapToolbarEnabled = false;
+
+			InfoWindowHelper infoWindowHelper = new InfoWindowHelper(this);
+			_googleMap.SetInfoWindowAdapter(infoWindowHelper);
 
 			_pickupProgress.Visibility = ViewStates.Visible;
 
