@@ -1,12 +1,7 @@
-﻿using Android.App;
-using Android.Content;
-using Android.Graphics;
+﻿using Android.Graphics;
 using Android.Graphics.Drawables;
-using Android.OS;
-using Android.Runtime;
 using Android.Support.V7.Widget;
 using Android.Views;
-using Android.Widget;
 
 namespace Ctrip.Rider.Helpers
 {
@@ -40,7 +35,7 @@ namespace Ctrip.Rider.Helpers
 
             for(int i = 0; i < parent.ChildCount; i++)
             {
-                if (i !=parent.ChildCount - 1)
+                if (i != parent.ChildCount - 1)
                 {
                     View child = parent.GetChildAt(i);
                     RecyclerView.LayoutParams @params = (RecyclerView.LayoutParams)child.LayoutParameters;

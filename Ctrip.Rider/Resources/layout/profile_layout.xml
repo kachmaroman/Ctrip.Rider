@@ -28,7 +28,7 @@
             android:id="@+id/email_edittext"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:hint="Email"
+            android:hint="@string/txtEmail"
             android:imeOptions="actionNext"
             android:inputType="textEmailAddress"
         />
@@ -56,7 +56,7 @@
                 android:id="@+id/fname_edittext"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
-                android:hint="First name"
+                android:hint="@string/txtFirstName"
                 android:imeOptions="actionNext"
                 android:inputType="textCapWords"
             />
@@ -74,7 +74,7 @@
                 android:id="@+id/lname_edittext"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
-                android:hint="Last name"
+                android:hint="@string/txtLastName"
                 android:imeOptions="actionGo"
                 android:inputType="textCapWords"
             />
@@ -87,17 +87,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/terms_tv"
-        android:text="By signing up you agree to our Terms and conditions"
+        android:text="@string/txtPrivacyPolicy"
         android:layout_above="@id/profile_prim_btn"
         android:layout_centerInParent="true"
         android:layout_marginBottom="4dp"
+        android:visibility="invisible"
     />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:id="@+id/profile_prim_btn"
-        android:text="Next"
+        android:text="@string/txtReady"
         android:textAllCaps="false"
         android:textSize="22sp"
         android:textColor="@android:color/white"

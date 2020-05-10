@@ -82,8 +82,8 @@ namespace Ctrip.Rider.EventListeners
                     if (_isDriverAccepted)
                     {
                         //Get Driver Location Updates
-                        double driverLatitude = double.Parse(snapshot.Child("driver_location").Child("latitude").Value.ToString());
-                        double driverLongitude = double.Parse(snapshot.Child("driver_location").Child("longitude").Value.ToString());
+                        double driverLatitude = double.Parse(snapshot.Child("driver_location").Child("latitude").Value.ToString(), new CultureInfo("en-US"));
+                        double driverLongitude = double.Parse(snapshot.Child("driver_location").Child("longitude").Value.ToString(), new CultureInfo("en-US"));
                         LatLng driverLocationLatLng = new LatLng(driverLatitude, driverLongitude);
                         TripUpdates?.Invoke(this, new TripUpdatesEventArgs { DriverLocation = driverLocationLatLng, Status = status, Fares = fares });
                     }

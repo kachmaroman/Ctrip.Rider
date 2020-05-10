@@ -30,7 +30,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Finding your ride"
+            android:text="@string/txtFindRide"
             android:layout_gravity="center"
             android:layout_marginStart="8dp"
             android:textSize="16sp"
@@ -73,7 +73,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Gh 25"
+            android:text="Price"
             android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@android:color/black"
@@ -105,7 +105,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="From"
+                    android:text="@string/txtFrom"
                     android:gravity="center"
                     android:id="@+id/from_header_tv"
                     android:textColor="@android:color/black"
@@ -140,7 +140,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="To"
+                    android:text="@string/txtTo"
                     android:gravity="center"
                     android:textColor="@android:color/black"
                     android:textStyle="bold"
@@ -167,7 +167,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="TIME"
+                    android:text="@string/txtTime"
                     android:gravity="center"
                     android:textColor="@android:color/black"
                     android:textStyle="bold"
@@ -195,7 +195,7 @@
         android:layout_below="@id/ticket_root"
         android:layout_margin="8dp"
         android:background="@drawable/outline_btn_bg"
-        android:text="Cancel ride request"
+        android:text="@string/txtCancelRequest"
         android:textColor="@android:color/holo_red_dark"
     />
 </RelativeLayout>

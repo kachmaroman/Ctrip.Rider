@@ -3,28 +3,28 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<group>
-		<item android:id="@+id/action_free_rides"
+		<!--<item android:id="@+id/action_free_rides"
 		      android:title="Rides"
-		      android:icon="@drawable/ic_free_ride"/>
-
-		<item android:id="@+id/action_payments"
-					android:title="Payments"
-					android:icon="@drawable/ic_payment"/>
+		      android:icon="@drawable/ic_free_ride"/>-->
 
 		<item android:id="@+id/action_history"
-					android:title="History"
-					android:icon="@drawable/ic_history"/>
+		      android:title="@string/txtHistory"
+		      android:icon="@drawable/ic_history"/>
+
+		<item android:id="@+id/action_payments"
+					android:title="@string/txtPayments"
+					android:icon="@drawable/ic_payment"/>
 
 		<item android:id="@+id/action_promos"
-					android:title="Promo"
+					android:title="@string/txtPromo"
 					android:icon="@drawable/ic_promo"/>
 
 		<item android:id="@+id/action_support"
-					android:title="Support"
+					android:title="@string/txtSupport"
 					android:icon="@drawable/ic_support"/>
 
-		<item android:id="@+id/action_about"
+		<!--<item android:id="@+id/action_about"
 					android:title="About"
-					android:icon="@drawable/ic_about"/>
+					android:icon="@drawable/ic_about"/>-->
 	</group>
 </menu>

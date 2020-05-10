@@ -14,7 +14,6 @@ using Firebase.Auth;
 using Firebase.Database;
 using Plugin.Connectivity;
 using System;
-using Android.Support.Design.Widget;
 using Ctrip.Rider.Constants;
 using Ctrip.Rider.DataModels;
 using Ctrip.Rider.Fragments;
@@ -23,7 +22,7 @@ using static Com.Goodiebag.Pinview.Pinview;
 
 namespace Ctrip.Rider.Activities
 {
-	[Activity(Label = "Enter code", Theme = "@style/AppTheme", ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.KeyboardHidden | ConfigChanges.SmallestScreenSize, ScreenOrientation = ScreenOrientation.Portrait, WindowSoftInputMode = SoftInput.AdjustResize)]
+	[Activity(Label = "@string/txtEnterCode", Theme = "@style/AppTheme", ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.KeyboardHidden | ConfigChanges.SmallestScreenSize, ScreenOrientation = ScreenOrientation.Portrait, WindowSoftInputMode = SoftInput.AdjustResize)]
 	public class PhoneValidationActivity : AppCompatActivity, IPinViewEventListener, IOnCompleteListener, IValueEventListener, IOnFailureListener
 	{
 		//Views
@@ -87,10 +86,10 @@ namespace Ctrip.Rider.Activities
 			_nextButton = (Button)FindViewById(Resource.Id.prim_btn1);
 			_nextButton.Click += NextButton_Click;
 
-			string first = "Text message sent to ";
+			string messageSentTo = $"{Resources.GetText(Resource.String.txtMessageSentTo)} ";
 
-			SpannableString str = new SpannableString(first + _intFormat);
-			str.SetSpan(new StyleSpan(TypefaceStyle.Bold), first.Length, first.Length + _intFormat.Length, SpanTypes.ExclusiveExclusive);
+			SpannableString str = new SpannableString(messageSentTo + _intFormat);
+			str.SetSpan(new StyleSpan(TypefaceStyle.Bold), messageSentTo.Length, messageSentTo.Length + _intFormat.Length, SpanTypes.ExclusiveExclusive);
 
 			_enterCodeTv.TextFormatted = str;
 
@@ -130,7 +129,7 @@ namespace Ctrip.Rider.Activities
 			if (string.IsNullOrEmpty(verificationId))
 			{
 				CloseProgressDialog();
-				_helper.ShowCookieBar("Error", "Invalid code");
+				_helper.ShowCookieBar(Resources.GetText(Resource.String.txtError), Resources.GetText(Resource.String.txtInvalidCode));
 
 				return;
 			}
@@ -163,7 +162,7 @@ namespace Ctrip.Rider.Activities
 		public void OnFailure(Java.Lang.Exception e)
 		{
 			CloseProgressDialog();
-			_helper.ShowCookieBar("Error", "Invalid code");
+			_helper.ShowCookieBar(Resources.GetText(Resource.String.txtError), Resources.GetText(Resource.String.txtInvalidCode));
 		}
 
 		private void CheckIfUserExists(string userId)
@@ -207,6 +206,7 @@ namespace Ctrip.Rider.Activities
 			}
 			else
 			{
+				CloseProgressDialog();
 				StartActivity(new Intent(this, typeof(ProfileActivity)));
 				OverridePendingTransition(Resource.Animation.slide_up_anim, Resource.Animation.slide_up_out);
 			}

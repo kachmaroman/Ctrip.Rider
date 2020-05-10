@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Android;
@@ -33,6 +34,7 @@ using static Android.Support.Design.Widget.NavigationView;
 using Location = Android.Locations.Location;
 using Toolbar = Android.Support.V7.Widget.Toolbar;
 using static Android.Support.V4.View.ViewPager;
+using Calendar = Java.Util.Calendar;
 using Result = Android.App.Result;
 
 namespace Ctrip.Rider
@@ -405,8 +407,8 @@ namespace Ctrip.Rider
 					_requestDriverFragment = null;
 
 					Android.Support.V7.App.AlertDialog.Builder alert = new Android.Support.V7.App.AlertDialog.Builder(this);
-					alert.SetTitle("Message");
-					alert.SetMessage("Available Drivers Couldn't Accept Your Ride Request, Try again in a few mnoment");
+					alert.SetTitle(Resources.GetText(Resource.String.txtMessage));
+					alert.SetMessage(Resources.GetText(Resource.String.txtNoDriversAvailable));
 					alert.Show();
 				}
 			});
@@ -421,7 +423,7 @@ namespace Ctrip.Rider
 			}
 
 			_driverNameText.Text = e.acceptedDriver.Fullname;
-			_tripStatusText.Text = "Coming";
+			_tripStatusText.Text = Resources.GetText(Resource.String.txtOnTrip);
 
 			_tripDetailsBehavior.State = BottomSheetBehavior.StateHidden;
 			_driverAssignedBehavior.State = BottomSheetBehavior.StateExpanded;
@@ -431,29 +433,38 @@ namespace Ctrip.Rider
 		{
 			if (e.Status == "accepted")
 			{
-				_tripStatusText.Text = "Coming";
+				_tripStatusText.Text = Resources.GetText(Resource.String.txtDriverComing);
 				_mapHelper.UpdateDriverLocationToPickUp(_pickupLocationLatlng, e.DriverLocation);
 			}
 			else if (e.Status == "arrived")
 			{
-				_tripStatusText.Text = "Driver Arrived";
-				_mapHelper.UpdateDriverArrived();
+				string driverArrived = Resources.GetText(Resource.String.txtDriverArrived);
+				_tripStatusText.Text = driverArrived;
+				_mapHelper.UpdateDriverArrived(driverArrived);
 				MediaPlayer player = MediaPlayer.Create(this, Resource.Raw.alert);
 				player.Start();
 			}
 			else if (e.Status == "ontrip")
 			{
-				_tripStatusText.Text = "On Trip";
+				_tripStatusText.Text = Resources.GetText(Resource.String.txtOnTrip);
+				_pickupLocationLatlng.Longitude = e.DriverLocation.Longitude;
+				_pickupLocationLatlng.Latitude = e.DriverLocation.Latitude;
+				_mLastLocation.Longitude = e.DriverLocation.Longitude;
+				_mLastLocation.Latitude = e.DriverLocation.Latitude;
 				_mapHelper.UpdateLocationToDestination(e.DriverLocation, _destinationLatLng);
 			}
 			else if (e.Status == "ended")
 			{
 				RequestEventListener.EndTrip();
 				RequestEventListener = null;
-			 	await TripLocationUnset();
 
-				//driverAssignedBottomSheetBehavior.State = BottomSheetBehavior.StateHidden;
+				_googleMap.Clear();
 
+				ResetTrip();
+
+				_pickupText.Text = await _mapHelper.FindCordinateAddress(_pickupLocationLatlng);
+
+				await GetCurrentLocationAsync();
 				//MakePaymentFragment makePaymentFragment = new MakePaymentFragment(e.Fares);
 				//makePaymentFragment.Cancelable = false;
 				//var trans = SupportFragmentManager.BeginTransaction();
@@ -480,8 +491,8 @@ namespace Ctrip.Rider
 				_requestDriverFragment = null;
 
 				Android.Support.V7.App.AlertDialog.Builder alert = new Android.Support.V7.App.AlertDialog.Builder(this);
-				alert.SetTitle("Message");
-				alert.SetMessage("No available driver found, try again in a few moments");
+				alert.SetTitle(Resources.GetText(Resource.String.txtMessage));
+				alert.SetMessage(Resources.GetText(Resource.String.txtNoDriversAvailable));
 				alert.Show();
 			}
 		}
@@ -509,6 +520,7 @@ namespace Ctrip.Rider
 			_mapHelper = new MapFunctionHelper(Resources.GetString(Resource.String.mapKey), _googleMap);
 
 			_pickupLocationLatlng = _googleMap.CameraPosition.Target;
+
 			_pickupAddress = await _mapHelper.FindCordinateAddress(_pickupLocationLatlng);
 
 			_pickupText.Text = _pickupAddress;
@@ -534,10 +546,13 @@ namespace Ctrip.Rider
 
 		private void CurrentLocationCallback(object sender, OnLocationCapturedEventArgs e)
 		{
-			_mLastLocation = e.Location;
-			LatLng currentPosition = new LatLng(_mLastLocation.Latitude, _mLastLocation.Longitude);
-			_googleMap.AnimateCamera(CameraUpdateFactory.NewLatLngZoom(currentPosition, Zoom));
-			SetTripUi();
+			if (!_isTripDrawn)
+			{
+				_mLastLocation = e.Location;
+				LatLng currentPosition = new LatLng(_mLastLocation.Latitude, _mLastLocation.Longitude);
+				_googleMap.AnimateCamera(CameraUpdateFactory.NewLatLngZoom(currentPosition, Zoom));
+				SetTripUi();
+			}
 		}
 
 		private async Task StartLocationUpdatesAsync()
@@ -545,14 +560,6 @@ namespace Ctrip.Rider
 			if (CheckLocationPermissions())
 			{
 				await _locationProviderClient.RequestLocationUpdatesAsync(_mLocationRequest, _mLocationCalback, null);
-			}
-		}
-
-		private async Task StopLocationUpdatesAsync()
-		{
-			if (_locationProviderClient != null && _mLocationCalback != null)
-			{
-				await _locationProviderClient.RemoveLocationUpdatesAsync(_mLocationCalback);
 			}
 		}
 
@@ -626,11 +633,11 @@ namespace Ctrip.Rider
 					string duration = _mapHelper.GetDuration();
 
 					_rideTypeList.Clear();
-					_rideTypeList.Add(new RideTypeDataModel { Image = Resource.Drawable.taxi_lite, RideType = "Lite", RidePrice = $"₴ {estimatedFare}", RiderDuration = duration });
-					_rideTypeList.Add(new RideTypeDataModel { Image = Resource.Drawable.taxi_standard, RideType = "Standard", RidePrice = $"₴ {estimatedFare + 20}", RiderDuration = duration });
-					_rideTypeList.Add(new RideTypeDataModel { Image = Resource.Drawable.taxi_comfort, RideType = "Comfort", RidePrice = $"₴ {estimatedFare + 40}", RiderDuration = duration });
-					_rideTypeList.Add(new RideTypeDataModel { Image = Resource.Drawable.taxi_minibus, RideType = "Minibus", RidePrice = $"₴ {estimatedFare + 80}", RiderDuration = duration });
-					_rideTypeList.Add(new RideTypeDataModel { Image = Resource.Drawable.taxi_driver, RideType = "Driver", RidePrice = $"₴ {estimatedFare * 3}", RiderDuration = duration });
+					_rideTypeList.Add(new RideTypeDataModel { Image = Resource.Drawable.taxi_lite, RideType = Resources.GetText(Resource.String.txtLite), RidePrice = $"₴ {estimatedFare}", RiderDuration = duration });
+					_rideTypeList.Add(new RideTypeDataModel { Image = Resource.Drawable.taxi_standard, RideType = Resources.GetText(Resource.String.txtStandard), RidePrice = $"₴ {estimatedFare + 20}", RiderDuration = duration });
+					_rideTypeList.Add(new RideTypeDataModel { Image = Resource.Drawable.taxi_comfort, RideType = Resources.GetText(Resource.String.txtComfort), RidePrice = $"₴ {estimatedFare + 40}", RiderDuration = duration });
+					_rideTypeList.Add(new RideTypeDataModel { Image = Resource.Drawable.taxi_minibus, RideType = Resources.GetText(Resource.String.txtMinibus), RidePrice = $"₴ {estimatedFare + 80}", RiderDuration = duration });
+					_rideTypeList.Add(new RideTypeDataModel { Image = Resource.Drawable.taxi_driver, RideType = Resources.GetText(Resource.String.txtDriver), RidePrice = $"₴ {estimatedFare * 3}", RiderDuration = duration });
 
 					_pagerAdapter = new RidePagerAdapter(this, _rideTypeList);
 					_viewPager.Adapter = _pagerAdapter;
@@ -674,29 +681,23 @@ namespace Ctrip.Rider
 			_pickupProgress.Visibility = ViewStates.Gone;
 			_destinationProgress.Visibility = ViewStates.Gone;
 			_greetingsTv.Text = GetGreetings();
-			_destinationText.Text = "Where to go?";
+			_destinationText.Text = Resources.GetText(Resource.String.txtWhereToGo);
 
 			_isTripDrawn = false;
 			_googleMap.Clear();
 
 			_tripDetailsBehavior.Hideable = true;
+			_driverAssignedBehavior.Hideable = true;
 			_bottomSheetRootBehavior.Hideable = false;
 			_tripDetailsBehavior.State = BottomSheetBehavior.StateHidden;
 			_bottomSheetRootBehavior.State = BottomSheetBehavior.StateExpanded;
+			_driverAssignedBehavior.State = BottomSheetBehavior.StateHidden;
 
 			RunOnUiThread(() =>
 			{
 				_googleMap.AnimateCamera(CameraUpdateFactory.NewLatLngZoom(_pickupLocationLatlng, 17.0f));
 				_googleMap.SetPadding(0, 0, 0, _bottomSheetRootView.Height);
 			});
-		}
-
-		private async Task TripLocationUnset()
-		{
-			_googleMap.Clear(); ;
-
-			//tripDetailsBottonsheetBehavior.State = BottomSheetBehavior.StateHidden;
-			await GetCurrentLocationAsync();
 		}
 
 		#endregion
@@ -714,19 +715,19 @@ namespace Ctrip.Rider
 
 			if (hour >= 12 && hour <= 18)
 			{
-				greeting = "Good Afternoon";
+				greeting = Resources.GetText(Resource.String.txtGoodAfternoon);
 			}
 			else if (hour > 18 && hour < 21)
 			{
-				greeting = "Good Evening";
+				greeting = Resources.GetText(Resource.String.txtGoodEvening);
 			}
 			else if (hour >= 21 && hour < 24)
 			{
-				greeting = "Good Night";
+				greeting = Resources.GetText(Resource.String.txtGoodNight);
 			}
 			else
 			{
-				greeting = $"Good Morning, {name}";
+				greeting = $"{Resources.GetText(Resource.String.txtGoodMorning)}";
 			}
 
 			return $"{greeting}, {name}";
@@ -738,8 +739,6 @@ namespace Ctrip.Rider
 
 			switch (itemId)
 			{
-				case Resource.Id.action_free_rides:
-					break;
 				case Resource.Id.action_payments:
 					fragment = new PaymentsFragment();
 					break;
@@ -749,8 +748,6 @@ namespace Ctrip.Rider
 				case Resource.Id.action_promos:
 					break;
 				case Resource.Id.action_support:
-					break;
-				case Resource.Id.action_about:
 					break;
 			}
 

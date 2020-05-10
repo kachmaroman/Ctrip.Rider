@@ -92,7 +92,6 @@
     <Compile Include="Fragments\PaymentsFragment.cs" />
     <Compile Include="Fragments\PlacesHistory.cs" />
     <Compile Include="Fragments\ProfileFragment.cs" />
-    <Compile Include="Fragments\RequestDriver.cs" />
     <Compile Include="Helpers\AlertDialogHelper.cs" />
     <Compile Include="Helpers\AppDataHelper.cs" />
     <Compile Include="Helpers\CookieBarHelper.cs" />
@@ -404,9 +403,6 @@
     <AndroidResource Include="Resources\drawable\position.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\request_driver.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <AndroidResource Include="Resources\layout\onboarding_layout.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -584,6 +580,13 @@
     <AndroidResource Include="Resources\layout\rideInfo.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <AndroidResource Include="Resources\values-uk\strings.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\values-en\strings.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

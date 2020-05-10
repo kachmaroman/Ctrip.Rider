@@ -27,7 +27,7 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:id="@+id/payments_header_txt"
-					android:text="Payments"
+					android:text="@string/txtPayments"
 					android:layout_centerVertical="true"
 					android:textSize="22sp"
 					android:textColor="@android:color/black"
@@ -37,7 +37,7 @@
 					android:layout_width="wrap_content"
 					android:layout_height="22sp"
 					android:id="@+id/add_new_payment_btn"
-					android:text="Add new"
+					android:text="@string/txtAddNewPayment"
 					android:layout_centerVertical="true"
 					android:textColor="@color/colorAccent"
 					android:textAllCaps="false"
@@ -71,7 +71,7 @@
 					android:id="@+id/pay_txt1"
 					android:textColor="@android:color/white"
 					android:textAlignment="center"
-					android:text="Payment convenience"
+					android:text="@string/txtPaymentConvenience"
 					android:textSize="22sp"
 				/>
 
@@ -81,8 +81,8 @@
 					android:id="@+id/pay_txt2"
 					android:textColor="@android:color/white"
 					android:textAlignment="center"
-					android:text="Pay smart and enjoy a/nseamless ride"
-					android:textSize="16sp"
+					android:text="@string/txtPaymenyDesc"
+					android:textSize="15sp"
 					android:inputType="textMultiLine"
 					android:maxLines="2"
 					android:fontFamily="casual"
@@ -114,7 +114,6 @@
 		/>
 
 	</RelativeLayout>
-   
 
 	<include
 		layout="@layout/add_payment_bottomsheet"

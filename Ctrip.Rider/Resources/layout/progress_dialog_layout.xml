@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/progressText"
-        android:text="Loading. Please wait."
+        android:text="@string/txtPleaseWait"
         android:layout_toRightOf="@id/progressBar1"
         android:layout_centerVertical="true"
         android:layout_marginStart="16dp"

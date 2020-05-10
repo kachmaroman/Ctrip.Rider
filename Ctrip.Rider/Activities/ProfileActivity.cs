@@ -20,7 +20,7 @@ using static Android.Views.View;
 
 namespace Ctrip.Rider.Activities
 {
-    [Activity(Label = "Profile", Theme = "@style/AppTheme",ConfigurationChanges = Android.Content.PM.ConfigChanges.ScreenSize | Android.Content.PM.ConfigChanges.Orientation | Android.Content.PM.ConfigChanges.SmallestScreenSize, ScreenOrientation = Android.Content.PM.ScreenOrientation.Portrait, WindowSoftInputMode = SoftInput.AdjustResize)]
+    [Activity(Label = "@string/txtProfile", Theme = "@style/AppTheme",ConfigurationChanges = Android.Content.PM.ConfigChanges.ScreenSize | Android.Content.PM.ConfigChanges.Orientation | Android.Content.PM.ConfigChanges.SmallestScreenSize, ScreenOrientation = Android.Content.PM.ScreenOrientation.Portrait, WindowSoftInputMode = SoftInput.AdjustResize)]
     public class ProfileActivity : AppCompatActivity, ITextWatcher, IOnKeyListener
     {
         private Button _profileNextBtn;

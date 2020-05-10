@@ -24,7 +24,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:id="@+id/places_header_txt"
-				android:text="History"
+				android:text="@string/txtHistory"
 				android:layout_centerVertical="true"
 				android:textSize="22sp"
 				android:textColor="@android:color/black"
@@ -34,7 +34,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="22sp"
 				android:id="@+id/refresh_btn"
-				android:text="Refresh"
+				android:text="@string/txtRefresh"
 				android:layout_centerVertical="true"
 				android:textColor="@color/colorAccent"
 				android:textAllCaps="false"
@@ -67,7 +67,7 @@
 				android:id="@+id/places_txt1"
 				android:textColor="@android:color/white"
 				android:textAlignment="center"
-				android:text="Your ride history organizer"
+				android:text="@string/txtRideOrganizer"
 				android:textSize="22sp"
 			/>
 
@@ -81,6 +81,7 @@
 				android:textSize="16sp"
 				android:inputType="textMultiLine"
 				android:maxLines="2"
+				android:visibility="invisible"
 				android:fontFamily="casual"
 				android:layout_below="@+id/places_txt1"
 			/>

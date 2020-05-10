@@ -5,15 +5,15 @@
 
 	<!--Update strings and icons-->
 	<item android:id="@+id/action_edit_firstname"
-				android:title="Edit first name"
+				android:title="@string/txtEditFirstname"
 	/>
 
 	<item android:id="@+id/action_edit_lastname"
-				android:title="Edit last name"
+				android:title="@string/txtEditLastname"
 	/>
 
 	<item android:id="@+id/action_edit_email"
-				android:title="Edit email"
+				android:title="@string/txtEditEmail"
 	/>
 
 </menu>

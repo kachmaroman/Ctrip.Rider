@@ -30,11 +30,11 @@ namespace Ctrip.Rider.EventListeners
 		        return;
 	        }
 
-	        var child = snapshot.Children.ToEnumerable<DataSnapshot>();
+	        var childredn = snapshot.Children.ToEnumerable<DataSnapshot>();
 
             _recentTripList.Clear();
 
-            foreach (DataSnapshot searchData in child)
+            foreach (DataSnapshot searchData in childredn)
             {
 	            NewTripDetails tripDetails = new NewTripDetails
 	            {
@@ -57,7 +57,8 @@ namespace Ctrip.Rider.EventListeners
 
         public void Create()
         {
-            AppDataHelper.GetDatabase().GetReference("Ride_requests").AddValueEventListener(this);
+	        string riderId = AppDataHelper.GetCurrentUser().Uid;
+	        AppDataHelper.GetDatabase().GetReference("Ride_requests").OrderByChild("rider_id").EqualTo(riderId).AddValueEventListener(this);
         }
     }
 }

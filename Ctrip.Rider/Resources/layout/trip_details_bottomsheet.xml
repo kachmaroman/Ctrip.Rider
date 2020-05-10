@@ -95,7 +95,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@drawable/primary_btn_bg"
-        android:text="Request Pickup"
+        android:text="@string/txtRequestPickup"
         android:textColor="@android:color/white"
         android:id="@+id/ride_select_btn"
         android:layout_below="@+id/viewPager"

@@ -184,7 +184,7 @@ namespace Ctrip.Rider.Activities
             }
             else
             {
-                _helper.ShowCookieBar("Error", "Invalid phone number");
+                _helper.ShowCookieBar(Resources.GetText(Resource.String.txtError), Resources.GetText(Resource.String.txtInvalidPhoneNumber));
             }
         }
 

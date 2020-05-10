@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+	<string name="txtGetStarted">Увійдіть за</string>
+	<string name="txtGetStartedPhone">номером телефону</string>
+	<string name="txtSocialConnect">або за допомогою</string>
+
+	<string name="txtNoConnection">Підключення втрачено. Не вдалося виконати ваш запит.</string>
+	<string name="txtNoConnectionTryAgain">Спробувати знову</string>
+
+	<string name="txtPhoneConfirmation">Ви отримаєте смс,\nщоб підтвердити свій номер</string>
+	<string name="txtSignIn">Увійти</string>
+
+	<string name="txtEnterCode">Введіть код</string>
+	<string name="txtMessageSentTo">Повідомлення надіслано на</string>
+	<string name="txtSendAgain">Надіслати ще раз</string>
+	<string name="txtNext">Продовжити</string>
+
+	<string name="txtEmail">Електронна пошта</string>
+	<string name="txtFirstName">Ім\'я</string>
+	<string name="txtLastName">Прізвище</string>
+	<string name="txtPrivacyPolicy">Підписавшись, ви погоджуєтесь з нашими умовами</string>
+	<string name="txtReady">Готово</string>
+
+	<string name="txtAddPaymentmethod">Виберіть спосіб оплати</string>
+	<string name="txtCancel">Скасувати</string>
+	<string name="txtCash">Готівка</string>
+	<string name="txtCreditOrDebitCard">Кредитна або дебетова картка</string>
+
+	<string name="txtFindRide">Пошук вашої поїздки</string>
+	<string name="txtFrom">Звідки</string>
+	<string name="txtTo">Куди?</string>
+	<string name="txtTime">Час</string>
+	<string name="txtCancelRequest">Скасувати запит</string>
+
+	<string name="txtGoodAfternoon">Доброго дня</string>
+	<string name="txtGoodEvening">Доброго вечора</string>
+	<string name="txtGoodNight">Доброї ночі</string>
+	<string name="txtGoodMorning">Доброго ранку</string>
+	<string name="txtWhereToGo">Куди?</string>
+
+	<string name="txtAddNewPayment">Додати</string>
+	<string name="txtPayments">Оплата</string>
+	<string name="txtPaymentConvenience">Зручність оплати</string>
+	<string name="txtPaymenyDesc">Платіть розумно та насолоджуйтесь\поїздкою</string>
+
+	<string name="txtHistory">Ваші поїздки</string>
+	<string name="txtRefresh">Оновити</string>
+	<string name="txtRideOrganizer">Ваш організатор поїздок</string>
+
+	<string name="txtProfile">Профіль</string>
+	<string name="txtLogOut">Вийти</string>
+	<string name="txtAddAddress">Додайте домашню або робочу адресу</string>
+	<string name="txtNoHomeAddress">Домашню адресу не встановлено</string>
+	<string name="txtHomeAddress">Домашня адреса</string>
+	<string name="txtNoWorkAddress">Робочу адресу не встановлено</string>
+	<string name="txtWrokAdress">Робоча адреса</string>
+
+	<string name="txtPleaseWait">Будь ласка, зачекайте...</string>
+
+	<string name="txtRequestPickup">Підтвердити</string>
+
+	<string name="txtDriver">Драйвер</string>
+	<string name="txtDriverComing">Водій прямує до Вас</string>
+	<string name="txtOnTrip">В дорозі</string>
+	<string name="txtDirections">Отримати вказівки</string>
+
+	<string name="txtLite">Лайт</string>
+	<string name="txtStandard">Стандарт</string>
+	<string name="txtComfort">Комфорт</string>
+	<string name="txtMinibus">Мікроавтобус</string>
+
+	<string name="txtPromo">Отримуйте знижки</string>
+	<string name="txtSupport">Допомога</string>
+
+	<string name="txtEditFirstname">Змінити ім\'я</string>
+	<string name="txtEditLastname">Змінити прізвище</string>
+	<string name="txtEditEmail">Змінити електронну адресу</string>
+
+	<string name="txtAddedCreditCard">Картку успішно додано</string>
+	<string name="txtAddedCash">Спосіб оплати успішно додано</string>
+
+	<string name="txtLogOutMessage">Ви дійсно хочете вийти?</string>
+	<string name="txtLogOutYes">Так</string>
+	<string name="txtLogOutNo">Ні</string>
+
+	<string name="txtError">Помилка</string>
+	<string name="txtInvalidCode">Невірний код</string>
+	<string name="txtInvalidPhoneNumber">Невірний номер телефону</string>
+
+	<string name="txtDriverArrived">Ваш водій прибув</string>
+	<string name="txtDestionationMsg">До пункту призначення</string>
+	<string name="txtMessage">Повідомлення</string>
+	<string name="txtNoDriversAvailable">Не знайдено вільного водія, спробуйте ще раз.</string>
+</resources>

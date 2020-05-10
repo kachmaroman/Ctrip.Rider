@@ -38,7 +38,7 @@
 
                 <TextView
                     android:id="@+id/driverNameText"
-                    android:text="Driver"
+                    android:text="@string/txtDriver"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:layout_height="wrap_content"
@@ -46,7 +46,7 @@
 
                 <TextView
                     android:id="@+id/tripStatusText"
-                    android:text="On Trip"
+                    android:text="@string/txtOnTrip"
                     android:layout_marginTop="5dp"
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"/>
@@ -67,7 +67,7 @@
                     android:layout_marginRight="10dp"
                     android:padding="10dp"
                     android:background="@drawable/roundedges"
-                    android:tint="@color/ctripAccentColor"
+                    android:tint="@color/colorAccent"
                     android:src="@drawable/ic_call_black_48dp"
                     android:scaleType="centerCrop" />
 
@@ -79,7 +79,7 @@
                     android:layout_width="40dp"
                     android:padding="10dp"
                     android:background="@drawable/roundedges"
-                    android:tint="@color/ctripAccentColor"
+                    android:tint="@color/colorAccent"
                     android:src="@drawable/ic_clear_black_48dp"
                     android:scaleType="centerCrop" />
 
@@ -102,7 +102,7 @@
                 android:id="@+id/requestDriverButton"
                 android:layout_height="40dp"
                 android:layout_width="match_parent"
-                android:text="Get Directions"
+                android:text="@string/txtDirections"
                 android:textAllCaps="false"
                 android:paddingLeft="10dp"
                 android:paddingTop="8dp"
@@ -111,7 +111,7 @@
                 android:translationZ="2dp"
                 android:elevation="2dp"
                 android:textColor="@color/ctripwhite"
-                android:background="@drawable/ctriproundbutton"
+                android:background="@drawable/primary_btn_bg"
                 android:layout_alignParentBottom="true"/>
 
         </RelativeLayout>

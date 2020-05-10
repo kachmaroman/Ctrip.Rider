@@ -1,14 +1,13 @@
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:id="@+id/profile_main_root"
-	android:focusable="true"
-	android:focusableInTouchMode="true"
-	android:clickable="true"
-	android:background="@android:color/white">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/profile_main_root"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:clickable="true"
+                android:background="@android:color/white">
 
 	<android.support.v7.widget.Toolbar
 		android:id="@+id/custom_toolbar"
@@ -26,7 +25,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:id="@+id/profile_header_txt"
-				android:text="Profile"
+				android:text="@string/txtProfile"
 				android:layout_centerVertical="true"
 				android:textSize="22sp"
 				android:textColor="@android:color/black"
@@ -36,13 +35,14 @@
 				android:layout_width="wrap_content"
 				android:layout_height="22sp"
 				android:id="@+id/log_out_btn"
-				android:text="Log out"
+				android:text="@string/txtLogOut"
 				android:layout_centerVertical="true"
 				android:textColor="@color/colorAccent"
 				android:textAllCaps="false"
 				android:background="@drawable/outline_btn_bg"
 				android:layout_alignParentEnd="true"
 			/>
+
 		</RelativeLayout>
 
 	</android.support.v7.widget.Toolbar>
@@ -70,7 +70,7 @@
 				android:id="@+id/profile_txt1"
 				android:textColor="@android:color/white"
 				android:textAlignment="center"
-				android:text="Graham Asare"
+				android:text="Roman Roman"
 				android:textSize="22sp"
 			/>
 
@@ -126,7 +126,7 @@
 	<TextView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:text="Ride receipts will be sent to"
+		android:text="@string/txtAddAddress"
 		android:layout_below="@+id/profile_intro_card"
 		android:layout_marginTop="8dp"
 		android:layout_marginStart="16dp"
@@ -159,16 +159,18 @@
             android:paddingBottom="8dp"
 			android:clickable="true"
 			android:foreground="?android:attr/selectableItemBackgroundBorderless">
-            <View
+            
+			<View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_alignParentTop="true"
                 android:background="@android:color/darker_gray"
             />
+
 			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="No Home address set"
+				android:text="@string/txtNoHomeAddress"
 				android:id="@+id/txt_addHome"
 				android:layout_alignParentTop="true"
 				android:textSize="16dp"
@@ -179,11 +181,10 @@
 			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="Home"
+				android:text="@string/txtHomeAddress"
 				android:id="@+id/txt_addHome_lbl"
 				android:layout_alignParentStart="true"
 				android:layout_alignParentBottom="true"
-				
 			/>
 
 			<ImageView
@@ -216,7 +217,7 @@
 			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="No Work address set"
+				android:text="@string/txtNoWorkAddress"
 				android:id="@+id/txt_addWork"
 				android:textSize="16dp"
 				android:textColor="@android:color/black"
@@ -226,11 +227,10 @@
 			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="Work"
+				android:text="@string/txtWrokAdress"
 				android:id="@+id/txt_addWork_lbl"
 				android:layout_alignParentStart="true"
 				android:layout_alignParentBottom="true"
-				
 			/>
 
 			<ImageView
@@ -245,6 +245,5 @@
 		</RelativeLayout>
 
 	</LinearLayout>
-	
-				
+
 </RelativeLayout>

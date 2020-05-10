@@ -90,15 +90,6 @@ namespace Ctrip.Rider.Fragments
             TextView fullname = view.FindViewById<TextView>(Resource.Id.profile_txt1);
             fullname.Text = AppDataHelper.GetFullName();
 
-            TextView rideReceiptTxt = view.FindViewById<TextView>(Resource.Id.textView_ride);
-
-            string first = "Ride receipt will be sent to ";
-
-            SpannableString str = new SpannableString(first + email);
-            str.SetSpan(new StyleSpan(TypefaceStyle.Bold), first.Length, first.Length + email.Length, SpanTypes.ExclusiveExclusive);
-
-            rideReceiptTxt.TextFormatted = str;
-
             _menuBtn = view.FindViewById<TextView>(Resource.Id.edit_menu);
             _menuBtn.Click += MenuBtn_Click;
 
@@ -196,8 +187,8 @@ namespace Ctrip.Rider.Fragments
         {
             _builder = new Android.App.AlertDialog.Builder(_mainActivity);
             _alertDialog = _builder.Create();
-            _alertDialog.SetMessage("Do you want to log out?");
-            _alertDialog.SetButton("Yes", (s1, e1) =>
+            _alertDialog.SetMessage(Resources.GetText(Resource.String.txtLogOutMessage));
+            _alertDialog.SetButton(Resources.GetText(Resource.String.txtLogOutYes), (s1, e1) =>
             {
                 FirebaseAuth auth = AppDataHelper.GetFirebaseAuth();
                 _editor = preferences.Edit();
@@ -212,7 +203,7 @@ namespace Ctrip.Rider.Fragments
                 _mainActivity.Finish();
             });
 
-            _alertDialog.SetButton2("No", (s2, e2) =>
+            _alertDialog.SetButton2(Resources.GetText(Resource.String.txtLogOutNo), (s2, e2) =>
             {
                 _alertDialog.Dismiss();
             });

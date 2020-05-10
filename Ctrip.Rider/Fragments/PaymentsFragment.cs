@@ -36,13 +36,13 @@ namespace Ctrip.Rider.Fragments
 
         private void CcBtn_Click(object sender, EventArgs e)
         {
-            Toast.MakeText(Context, "Credit card added successfully", ToastLength.Short).Show();
+            Toast.MakeText(Context, Resources.GetText(Resource.String.txtAddedCreditCard), ToastLength.Short).Show();
 
         }
 
         private void MomoBtn_Click(object sender, EventArgs e)
         {
-            Toast.MakeText(Context, "Momo added successfully", ToastLength.Short).Show();
+            Toast.MakeText(Context, Resources.GetText(Resource.String.txtAddedCash), ToastLength.Short).Show();
         }
 
         private void CancelTxt_Click(object sender, EventArgs e)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Android.Gms.Maps.Model;
 using Com.Google.Maps.Android;
@@ -52,8 +53,8 @@ namespace Ctrip.Rider.EventListeners
                         if (data.Child("ride_id").Value.ToString() == "waiting")
                         {
                             //Get Driver Location;
-                            double latitude = double.Parse(data.Child("location").Child("latitude").Value.ToString());
-                            double longitude = double.Parse(data.Child("location").Child("longitude").Value.ToString());
+                            double latitude = double.Parse(data.Child("location").Child("latitude").Value.ToString(), new CultureInfo("en-US"));
+                            double longitude = double.Parse(data.Child("location").Child("longitude").Value.ToString(), new CultureInfo("en-US"));
                             LatLng driverLocation = new LatLng(latitude, longitude);
                             AvailableDriver driver = new AvailableDriver();
 

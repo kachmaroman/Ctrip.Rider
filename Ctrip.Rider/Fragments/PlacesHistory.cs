@@ -25,7 +25,7 @@ namespace Ctrip.Rider.Fragments
         {
             View view = inflater.Inflate(Resource.Layout.places_layout, container, false);
             _myToolbar = view.FindViewById<Toolbar>(Resource.Id.places_toolbar);
-            _myToolbar.Title = "History";
+            _myToolbar.Title = Resources.GetText(Resource.String.txtHistory);
 
             RetrieveData();
 
