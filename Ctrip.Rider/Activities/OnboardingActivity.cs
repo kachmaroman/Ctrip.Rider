@@ -114,7 +114,7 @@ namespace Ctrip.Rider.Activities
 			_builder = new CountryPicker.Builder().With(this).SortBy(CountryPicker.SortByName);
 			_picker = _builder.Build();
 			_country = _picker.CountryFromSIM;
-			_countryFlagImg.SetBackgroundResource(_country.Flag);
+			_countryFlagImg.SetBackgroundResource(2131165573);
 		}
 
 		private void MFacebookFab_Click(object sender, EventArgs e)

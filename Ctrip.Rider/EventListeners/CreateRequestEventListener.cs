@@ -28,7 +28,7 @@ namespace Ctrip.Rider.EventListeners
 
         public class DriverAcceptedEventArgs : EventArgs
         {
-            public AcceptedDriver acceptedDriver { get; set; }
+            public AcceptedDriver AcceptedDriver { get; set; }
         }
 
         public class TripUpdatesEventArgs : EventArgs
@@ -64,7 +64,7 @@ namespace Ctrip.Rider.EventListeners
                         acceptedDriver.Fullname = snapshot.Child("driver_name").Value.ToString();
                         acceptedDriver.Phone = snapshot.Child("driver_phone").Value.ToString();
                         _isDriverAccepted = true;
-                        DriverAccepted?.Invoke(this, new DriverAcceptedEventArgs { acceptedDriver = acceptedDriver });
+                        DriverAccepted?.Invoke(this, new DriverAcceptedEventArgs { AcceptedDriver = acceptedDriver });
                     }
 
                     //Gets Status
@@ -163,7 +163,7 @@ namespace Ctrip.Rider.EventListeners
         public void NotifyDriver(List<AvailableDriver> availableDrivers)
         {
             _mAvailableDrivers = availableDrivers;
-            if (_mAvailableDrivers.Count >= 1 && _mAvailableDrivers != null)
+            if (_mAvailableDrivers.Count >= 1)
             {
                 _selectedDriver = _mAvailableDrivers[0];
                 _notifyDriverRef = _database.GetReference("driversAvailable/" + _selectedDriver.Id + "/ride_id");

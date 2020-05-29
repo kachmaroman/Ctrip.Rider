@@ -79,7 +79,7 @@ namespace Ctrip.Rider.Helpers
 		public async Task<string> GetDirectionJsonAsync(LatLng location, LatLng destination)
 		{
 			string pickupLat = location.Latitude.ToString(new CultureInfo("en-US"));
-			string pickupLng= location.Longitude.ToString(new CultureInfo("en-US"));
+			string pickupLng = location.Longitude.ToString(new CultureInfo("en-US"));
 
 			string destinationLat = destination.Latitude.ToString(new CultureInfo("en-US"));
 			string destinationLng = destination.Longitude.ToString(new CultureInfo("en-US"));
@@ -101,7 +101,6 @@ namespace Ctrip.Rider.Helpers
 		{
 			DirectionParser directionData = JsonConvert.DeserializeObject<DirectionParser>(json);
 
-			//Decode Encoded Route
 			var points = directionData.routes[0].overview_polyline.points;
 			IList<LatLng> line = PolyUtil.Decode(points);
 
@@ -112,7 +111,6 @@ namespace Ctrip.Rider.Helpers
 				routeList.Add(item);
 			}
 
-			//Draw Polylines on Map
 			PolylineOptions polylineOptions = new PolylineOptions()
 				.AddAll(routeList)
 				.InvokeWidth(10)
@@ -122,19 +120,17 @@ namespace Ctrip.Rider.Helpers
 				.InvokeJointType(JointType.Round)
 				.Geodesic(true);
 
-			Android.Gms.Maps.Model.Polyline mPolyline = map.AddPolyline(polylineOptions);
+			map.AddPolyline(polylineOptions);
 
 			LatLng firstpoint = line.First();
 			LatLng lastpoint = line.Last();
 
 			MarkerOptions pickupMarkerOptions = new MarkerOptions();
 			pickupMarkerOptions.SetPosition(firstpoint);
-			//pickupMarkerOptions.SetTitle("Pickup");
 			pickupMarkerOptions.SetIcon(BitmapDescriptorFactory.DefaultMarker(BitmapDescriptorFactory.HueGreen));
 
 			MarkerOptions destinationMarkerOptions = new MarkerOptions();
 			destinationMarkerOptions.SetPosition(lastpoint);
-			//destinationMarkerOptions.SetTitle("Destination");
 			destinationMarkerOptions.SetIcon(BitmapDescriptorFactory.DefaultMarker(BitmapDescriptorFactory.HueRed));
 
 			MarkerOptions driverMarkerOptions = new MarkerOptions();
@@ -147,7 +143,6 @@ namespace Ctrip.Rider.Helpers
 			Marker destinationMarker = map.AddMarker(destinationMarkerOptions);
 			driverLocationMarker = map.AddMarker(driverMarkerOptions);
 
-			//Get Trip Bounds
 			double southlng = directionData.routes[0].bounds.southwest.lng;
 			double southlat = directionData.routes[0].bounds.southwest.lat;
 			double northlng = directionData.routes[0].bounds.northeast.lng;
@@ -159,7 +154,6 @@ namespace Ctrip.Rider.Helpers
 
 			map.AnimateCamera(CameraUpdateFactory.NewLatLngBounds(tripBound, 100));
 			map.SetPadding(40, 40, 40, 40);
-			pickupMarker.ShowInfoWindow();
 
 			duration = directionData.routes[0].legs[0].duration.value;
 			distance = directionData.routes[0].legs[0].distance.value;
@@ -170,7 +164,7 @@ namespace Ctrip.Rider.Helpers
 		public double GetEstimatedFare()
 		{
 			const double minFare = 40;
-			double baseFare = 30; //UAH 
+			double baseFare = 30; //UAH
 			double distanceFare = 5; //UAH per kilometer
 			double timeFare = 3; //UAH per minute
 

@@ -111,6 +111,7 @@
   <ItemGroup>
     <GoogleServicesJson Include="google-services.json" />
     <AndroidAsset Include="Assets\finding_driver.json" />
+    <None Include="ClassDiagram4.cd" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Properties\AndroidManifest.xml" />
     <None Include="Assets\AboutAssets.txt" />
@@ -390,11 +391,6 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\redmarker.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\layout\tripdetails.xml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\iconimage.png" />

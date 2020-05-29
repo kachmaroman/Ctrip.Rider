@@ -10,6 +10,7 @@ using Android.Content.PM;
 using Android.Gms.Location;
 using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
+using Android.Locations;
 using Android.Media;
 using Android.OS;
 using Android.Support.V7.App;
@@ -81,7 +82,8 @@ namespace Ctrip.Rider
 
 		//Buttons
 		private FloatingActionButton _myLocation;
-		private Button _requestRideBnt;
+		private Button _requestRideBtn;
+		private ImageButton _callDriverBtn;
 
 		private readonly string[] _permissionGroupLocation =
 			{Manifest.Permission.AccessCoarseLocation, Manifest.Permission.AccessFineLocation};
@@ -110,6 +112,7 @@ namespace Ctrip.Rider
 		private List<RideTypeDataModel> _rideTypeList;
 
 		private bool _isTripDrawn = false;
+		private string _driverPhone;
 
 		private NewTripDetails _newTripDetails;
 		FindingDriverDialog _requestDriverFragment;
@@ -147,10 +150,12 @@ namespace Ctrip.Rider
 			_destinationProgress = FindViewById<ProgressBar>(Resource.Id.destiopnationProgress);
 
 			_myLocation = FindViewById<FloatingActionButton>(Resource.Id.fab_myloc);
-			_requestRideBnt = FindViewById<Button>(Resource.Id.ride_select_btn);
+			_requestRideBtn = FindViewById<Button>(Resource.Id.ride_select_btn);
+			_callDriverBtn = FindViewById<ImageButton>(Resource.Id.callDriverButton);
 
 			_myLocation.Click += MyLocation_Click;
-			_requestRideBnt.Click += RequestRideBntClick;
+			_requestRideBtn.Click += RequestRideBtnClick;
+			_callDriverBtn.Click += CallDriverBtnClick;
 
 			_viewPager = FindViewById<ViewPager>(Resource.Id.viewPager);
 
@@ -212,6 +217,7 @@ namespace Ctrip.Rider
 
 			CheckLocationPermissions();
 			CreateLocationRequest();
+
 			await GetCurrentLocationAsync();
 			await StartLocationUpdatesAsync();
 
@@ -357,7 +363,7 @@ namespace Ctrip.Rider
 			}
 		}
 
-		private async void RequestRideBntClick(object sender, EventArgs e)
+		private async void RequestRideBtnClick(object sender, EventArgs e)
 		{
 			_tripDetailsBehavior.Hideable = true;
 			_bottomSheetRootBehavior.Hideable = true;
@@ -395,6 +401,16 @@ namespace Ctrip.Rider
 			_findDriverListener.Create();
 		}
 
+		private void CallDriverBtnClick(object sender, EventArgs e)
+		{
+			if (!string.IsNullOrEmpty(_driverPhone))
+			{
+				Android.Net.Uri uri = Android.Net.Uri.Parse("tel:" + _driverPhone);
+				Intent intent = new Intent(Intent.ActionDial, uri);
+				StartActivity(intent);
+			}
+		}
+
 		private void RequestListener_NoDriverAcceptedRequest(object sender, EventArgs e)
 		{
 			RunOnUiThread(() =>
@@ -414,7 +430,7 @@ namespace Ctrip.Rider
 			});
 		}
 
-		private void RequestListener_DriverAccepted(object sender, CreateRequestEventListener.DriverAcceptedEventArgs e)
+		private async void RequestListener_DriverAccepted(object sender, CreateRequestEventListener.DriverAcceptedEventArgs e)
 		{
 			if (_requestDriverFragment != null)
 			{
@@ -422,7 +438,8 @@ namespace Ctrip.Rider
 				_requestDriverFragment = null;
 			}
 
-			_driverNameText.Text = e.acceptedDriver.Fullname;
+			_driverPhone = e.AcceptedDriver.Phone;
+			_driverNameText.Text = e.AcceptedDriver.Fullname;
 			_tripStatusText.Text = Resources.GetText(Resource.String.txtOnTrip);
 
 			_tripDetailsBehavior.State = BottomSheetBehavior.StateHidden;
@@ -441,30 +458,32 @@ namespace Ctrip.Rider
 				string driverArrived = Resources.GetText(Resource.String.txtDriverArrived);
 				_tripStatusText.Text = driverArrived;
 				_mapHelper.UpdateDriverArrived(driverArrived);
+
 				MediaPlayer player = MediaPlayer.Create(this, Resource.Raw.alert);
 				player.Start();
 			}
 			else if (e.Status == "ontrip")
 			{
 				_tripStatusText.Text = Resources.GetText(Resource.String.txtOnTrip);
-				_pickupLocationLatlng.Longitude = e.DriverLocation.Longitude;
-				_pickupLocationLatlng.Latitude = e.DriverLocation.Latitude;
-				_mLastLocation.Longitude = e.DriverLocation.Longitude;
-				_mLastLocation.Latitude = e.DriverLocation.Latitude;
 				_mapHelper.UpdateLocationToDestination(e.DriverLocation, _destinationLatLng);
 			}
 			else if (e.Status == "ended")
 			{
+				_pickupLocationLatlng.Longitude = e.DriverLocation.Longitude;
+				_pickupLocationLatlng.Latitude = e.DriverLocation.Latitude;
+				_mLastLocation.Longitude = e.DriverLocation.Longitude;
+				_mLastLocation.Latitude = e.DriverLocation.Latitude;
+
 				RequestEventListener.EndTrip();
 				RequestEventListener = null;
 
-				_googleMap.Clear();
+				//_googleMap.Clear();
 
 				ResetTrip();
 
 				_pickupText.Text = await _mapHelper.FindCordinateAddress(_pickupLocationLatlng);
 
-				await GetCurrentLocationAsync();
+				//await GetCurrentLocationAsync();
 				//MakePaymentFragment makePaymentFragment = new MakePaymentFragment(e.Fares);
 				//makePaymentFragment.Cancelable = false;
 				//var trans = SupportFragmentManager.BeginTransaction();
@@ -583,7 +602,7 @@ namespace Ctrip.Rider
 
 			_locationProviderClient = LocationServices.GetFusedLocationProviderClient(this);
 
-			_mLocationCalback = new LocationCallbackHelper();
+			_mLocationCalback = new LocationCallbackHelper(); 
 			_mLocationCalback.CurrentLocation += CurrentLocationCallback;
 		}
 

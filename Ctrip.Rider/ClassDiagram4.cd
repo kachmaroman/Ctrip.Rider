@@ -1,0 +1,255 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Ctrip.Rider.DataModels.AcceptedDriver">
+    <Position X="2.75" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAICAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAA=</HashCode>
+      <FileName>DataModels\AcceptedDriver.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Ctrip.Rider.DataModels.AvailableDriver">
+    <Position X="7" Y="6" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataModels\AvailableDriver.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Ctrip.Rider.DataModels.NewTripDetails">
+    <Position X="7" Y="9.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAQAAIAABAAIADAMAAACEAAAAQAAAQEACABAAAACAAA=</HashCode>
+      <FileName>DataModels\NewTripDetails.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Ctrip.Rider.DataModels.UserData">
+    <Position X="0.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAACAAEAAAAAAAIAAAAAAAAAAAAAAAIAAAgAg=</HashCode>
+      <FileName>DataModels\Person.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Ctrip.Rider.DataModels.RideTypeDataModel">
+    <Position X="0.5" Y="2.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAgQAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataModels\RideTypeDataModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Ctrip.Rider.Helpers.GeocodedWaypoint">
+    <Position X="0.5" Y="13.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAIAAAAAAIAAAAAAAAAAAAAAAAAAAAIAAAA=</HashCode>
+      <FileName>Helpers\DirectionParser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Ctrip.Rider.Helpers.Bounds">
+    <Position X="7" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Helpers\DirectionParser.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="southwest" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Ctrip.Rider.Helpers.Distance">
+    <Position X="2.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAACAIAAAAAAAAAAA=</HashCode>
+      <FileName>Helpers\DirectionParser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Ctrip.Rider.Helpers.Duration">
+    <Position X="7" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAACAIAAAAAAAAAAA=</HashCode>
+      <FileName>Helpers\DirectionParser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Ctrip.Rider.Helpers.EndLocation">
+    <Position X="2.75" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Helpers\DirectionParser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Ctrip.Rider.Helpers.StartLocation">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Helpers\DirectionParser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Ctrip.Rider.Helpers.Step">
+    <Position X="5" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgIAAAIAAAAAAAIABAAAAAAAAEAAAAAABAAAAAAAQAA=</HashCode>
+      <FileName>Helpers\DirectionParser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Ctrip.Rider.Helpers.Leg">
+    <Position X="4.25" Y="0.5" Width="1.75" />
+    <AssociationLine Name="distance" Type="Ctrip.Rider.Helpers.Distance" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="4.25" Y="2.062" />
+        <Point X="4.182" Y="2.062" />
+        <Point X="4.182" Y="1.996" />
+        <Point X="3.375" Y="1.996" />
+        <Point X="3.375" Y="2.5" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="duration" Type="Ctrip.Rider.Helpers.Duration" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="6" Y="1.812" />
+        <Point X="6.09" Y="1.812" />
+        <Point X="6.09" Y="2.449" />
+        <Point X="6.371" Y="2.449" />
+        <Point X="6.371" Y="4.898" />
+        <Point X="7" Y="4.898" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="end_location" Type="Ctrip.Rider.Helpers.EndLocation" ManuallyRouted="true">
+      <Path>
+        <Point X="4.797" Y="2.18" />
+        <Point X="4.797" Y="4.398" />
+        <Point X="4.25" Y="4.398" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="start_location" Type="Ctrip.Rider.Helpers.StartLocation" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="4.25" Y="1.792" />
+        <Point X="3.875" Y="1.792" />
+        <Point X="3.875" Y="0.625" />
+        <Point X="2" Y="0.625" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAiAAAIAAQAAAAABBAAAAAAAAEAAAAAAAAAAgAAAQAA=</HashCode>
+      <FileName>Helpers\DirectionParser.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="distance" />
+      <Property Name="duration" />
+      <Property Name="end_location" />
+      <Property Name="start_location" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="steps" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Ctrip.Rider.Helpers.Route">
+    <Position X="3" Y="12.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAAAAAIAAAAQAAABAAAAAAAACACAAgAA=</HashCode>
+      <FileName>Helpers\DirectionParser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Ctrip.Rider.Helpers.DirectionParser">
+    <Position X="0.5" Y="11.75" Width="1.5" />
+    <AssociationLine Name="routes" Type="Ctrip.Rider.Helpers.Route" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="2" Y="12.406" />
+        <Point X="2.375" Y="12.406" />
+        <Point X="2.375" Y="14.937" />
+        <Point X="3" Y="14.937" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAQABAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Helpers\DirectionParser.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="routes" />
+      <Property Name="geocoded_waypoints" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Ctrip.Rider.Helpers.AddressComponent">
+    <Position X="2.75" Y="6" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAA=</HashCode>
+      <FileName>Helpers\GeocodingParser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Ctrip.Rider.Helpers.Location">
+    <Position X="5" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Helpers\GeocodingParser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Ctrip.Rider.Helpers.Southwest">
+    <Position X="7" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Helpers\GeocodingParser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Ctrip.Rider.Helpers.Viewport">
+    <Position X="0.5" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Helpers\GeocodingParser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Ctrip.Rider.Helpers.Geometry">
+    <Position X="3" Y="9.75" Width="1.5" />
+    <AssociationLine Name="location" Type="Ctrip.Rider.Helpers.Location" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3.875" Y="10.853" />
+        <Point X="3.875" Y="10.916" />
+        <Point X="4.562" Y="10.916" />
+        <Point X="4.562" Y="10.398" />
+        <Point X="5" Y="10.398" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="viewport" Type="Ctrip.Rider.Helpers.Viewport" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3.427" Y="10.853" />
+        <Point X="3.427" Y="10.916" />
+        <Point X="2.938" Y="10.916" />
+        <Point X="2.938" Y="10.438" />
+        <Point X="2" Y="10.438" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAgBAAAAAACAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Helpers\GeocodingParser.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="location" />
+      <Property Name="viewport" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Ctrip.Rider.Helpers.Result">
+    <Position X="5" Y="12.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAgIAAAA=</HashCode>
+      <FileName>Helpers\GeocodingParser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Ctrip.Rider.Helpers.GeocodingParser">
+    <Position X="3" Y="11.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAA=</HashCode>
+      <FileName>Helpers\GeocodingParser.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="results" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Ctrip.Rider.Helpers.RecyclerItemDecor">
+    <Position X="0.5" Y="7.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAgAABAAAAAAAAAAAAAAAAACAAAAAA=</HashCode>
+      <FileName>Helpers\RecyclerItemDecor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="Ctrip.Rider.Constants.LoginMethodEnums">
+    <Position X="7" Y="7.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>gAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAA=</HashCode>
+      <FileName>Constants\Enums.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

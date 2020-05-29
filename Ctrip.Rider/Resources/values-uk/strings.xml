@@ -41,9 +41,9 @@
 	<string name="txtAddNewPayment">Додати</string>
 	<string name="txtPayments">Оплата</string>
 	<string name="txtPaymentConvenience">Зручність оплати</string>
-	<string name="txtPaymenyDesc">Платіть розумно та насолоджуйтесь\поїздкою</string>
+	<string name="txtPaymenyDesc">Платіть розумно та насолоджуйтесь\nпоїздкою</string>
 
-	<string name="txtHistory">Ваші поїздки</string>
+	<string name="txtHistory">Поїздки</string>
 	<string name="txtRefresh">Оновити</string>
 	<string name="txtRideOrganizer">Ваш організатор поїздок</string>
 
@@ -69,7 +69,7 @@
 	<string name="txtComfort">Комфорт</string>
 	<string name="txtMinibus">Мікроавтобус</string>
 
-	<string name="txtPromo">Отримуйте знижки</string>
+	<string name="txtPromo">Промокоди</string>
 	<string name="txtSupport">Допомога</string>
 
 	<string name="txtEditFirstname">Змінити ім\'я</string>
