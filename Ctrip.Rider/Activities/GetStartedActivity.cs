@@ -120,9 +120,9 @@ namespace Ctrip.Rider.Activities
             _builder = new CountryPicker.Builder().With(this).Listener(this).SortBy(CountryPicker.SortByName);
             _picker = _builder.Build();
             _country = _picker.CountryFromSIM;
-            _countryCode = _country.Code;
+            _countryCode = "UA";
             _countryFlagImg.SetBackgroundResource(2131165573);
-            _cctv.Text = _country.DialCode;
+            _cctv.Text = "+380";
             
             _userPhoneText = (EditText)FindViewById(Resource.Id.user_phone_edittext);
             _userPhoneText.AddTextChangedListener(this);

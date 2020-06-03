@@ -140,7 +140,7 @@ namespace Ctrip.Rider.Helpers
 			driverMarkerOptions.Visible(false);
 
 			pickupMarker = map.AddMarker(pickupMarkerOptions);
-			Marker destinationMarker = map.AddMarker(destinationMarkerOptions);
+			map.AddMarker(destinationMarkerOptions);
 			driverLocationMarker = map.AddMarker(driverMarkerOptions);
 
 			double southlng = directionData.routes[0].bounds.southwest.lng;
@@ -222,7 +222,6 @@ namespace Ctrip.Rider.Helpers
 				driverLocationMarker.ShowInfoWindow();
 				isRequestingDirection = false;
 			}
-
 		}
 	}
 }
